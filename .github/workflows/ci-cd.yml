@@ -1,0 +1,26 @@
+name: GameStats CI/CD
+
+# Por ahora, se ejecuta solamente de forma manual.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  initial-check:
+    name: Comprobar configuración inicial
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v6
+
+      - name: Mostrar los archivos disponibles
+        run: ls -la
+
+      - name: Registrar el estado del proyecto
+        run: |
+          echo "GitHub Actions está funcionando."
+          echo "Pendiente: compilación y pruebas de Go y Scala."
+          echo "Pendiente: construcción de contenedores y deployment."
