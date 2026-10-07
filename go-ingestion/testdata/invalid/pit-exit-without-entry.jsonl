@@ -1,0 +1,2 @@
+{"eventId":"pit-e1","timestamp":"2026-09-01T12:00:00Z","gameId":"RACING","gameVersion":"1.0","matchId":"invalid-pit","sequence":1,"playerId":null,"type":"MATCH_STARTED","data":{"driverIds":["d1","d2"],"plannedLaps":2}}
+{"eventId":"pit-e2","timestamp":"2026-09-01T12:00:01Z","gameId":"RACING","gameVersion":"1.0","matchId":"invalid-pit","sequence":2,"playerId":"d1","type":"PIT_EXITED","data":{"stopId":"unknown-stop","lapNumber":1,"tireCompound":"SOFT"}}

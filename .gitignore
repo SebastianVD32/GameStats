@@ -1,0 +1,12 @@
+.cache/
+
+# Go
+go-ingestion/bin/
+go-ingestion/coverage.out
+go-ingestion/data/*.jsonl
+
+# IDE and OS metadata
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
