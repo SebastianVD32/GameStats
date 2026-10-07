@@ -1,0 +1,19 @@
+services:
+  go-ingestion:
+    build:
+      context: ./go-ingestion
+    image: gamestats/go-ingestion:local
+    environment:
+      HTTP_ADDR: ":8080"
+      WORKER_COUNT: "4"
+      OUTPUT_PATH: /data/ready-matches.jsonl
+      # Cuando exista el modulo Scala, sustituir la salida a archivo:
+      # ANALYZER_URL: http://scala-analysis:8081/api/v1/matches
+    ports:
+      - "8080:8080"
+    volumes:
+      - gamestats-data:/data
+    restart: unless-stopped
+
+volumes:
+  gamestats-data:

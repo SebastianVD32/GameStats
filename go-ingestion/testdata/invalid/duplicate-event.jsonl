@@ -1,0 +1,2 @@
+{"eventId":"duplicate-id","timestamp":"2026-09-01T12:00:00Z","gameId":"CHESS","gameVersion":"1.0","matchId":"duplicate-chess","sequence":1,"playerId":null,"type":"MATCH_STARTED","data":{"participants":[{"playerId":"p1","color":"WHITE"},{"playerId":"p2","color":"BLACK"}],"initialClockMs":60000,"incrementMs":0}}
+{"eventId":"duplicate-id","timestamp":"2026-09-01T12:00:01Z","gameId":"CHESS","gameVersion":"1.0","matchId":"duplicate-chess","sequence":2,"playerId":null,"type":"MATCH_FINISHED","data":{"winnerPlayerId":null,"reason":"DRAW"}}

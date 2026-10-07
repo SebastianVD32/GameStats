@@ -1,0 +1,6 @@
+.cache
+bin
+coverage.out
+data
+testdata
+*.md

@@ -1,0 +1,2 @@
+{"eventId":"reference-e1","timestamp":"2026-09-01T12:00:00Z","gameId":"BASKETBALL","gameVersion":"1.0","matchId":"invalid-reference","sequence":1,"playerId":null,"type":"MATCH_STARTED","data":{"teams":[{"teamId":"home","playerIds":["h1","h2"]},{"teamId":"away","playerIds":["a1","a2"]}],"periods":4}}
+{"eventId":"reference-e2","timestamp":"2026-09-01T12:00:01Z","gameId":"BASKETBALL","gameVersion":"1.0","matchId":"invalid-reference","sequence":2,"playerId":"h2","type":"ASSIST_RECORDED","data":{"teamId":"home","period":1,"scorerId":"h1","shotEventId":"does-not-exist"}}
