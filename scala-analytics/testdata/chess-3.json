@@ -1,0 +1,45 @@
+{
+  "gameId": "CHESS",
+  "gameVersion": "1.0",
+  "matchId": "chess-3",
+  "events": [
+    {
+      "eventId": "c3-e1",
+      "timestamp": "2026-09-01T12:00:02Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-3",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "participants": [
+          {
+            "playerId": "chess-alice",
+            "color": "WHITE"
+          },
+          {
+            "playerId": "chess-dan",
+            "color": "BLACK"
+          }
+        ],
+        "initialClockMs": 180000,
+        "incrementMs": 1000
+      }
+    },
+    {
+      "eventId": "c3-e2",
+      "timestamp": "2026-09-01T12:00:11Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-3",
+      "sequence": 2,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "winnerPlayerId": "chess-dan",
+        "reason": "TIMEOUT"
+      }
+    }
+  ]
+}

@@ -1,0 +1,155 @@
+{
+  "gameId": "CHESS",
+  "gameVersion": "1.0",
+  "matchId": "chess-1",
+  "events": [
+    {
+      "eventId": "c1-e1",
+      "timestamp": "2026-09-01T12:00:00Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-1",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "participants": [
+          {
+            "playerId": "chess-alice",
+            "color": "WHITE"
+          },
+          {
+            "playerId": "chess-bob",
+            "color": "BLACK"
+          }
+        ],
+        "initialClockMs": 59000,
+        "incrementMs": 0
+      }
+    },
+    {
+      "eventId": "c1-e2",
+      "timestamp": "2026-09-01T12:00:03Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-1",
+      "sequence": 2,
+      "playerId": "chess-alice",
+      "type": "MOVE_PLAYED",
+      "data": {
+        "moveNumber": 1,
+        "piece": "PAWN",
+        "from": "e2",
+        "to": "e4",
+        "decisionTimeMs": 1000,
+        "clockBeforeMs": 59000,
+        "clockAfterMs": 58000
+      }
+    },
+    {
+      "eventId": "c1-e3",
+      "timestamp": "2026-09-01T12:00:04Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-1",
+      "sequence": 3,
+      "playerId": "chess-bob",
+      "type": "MOVE_PLAYED",
+      "data": {
+        "moveNumber": 2,
+        "piece": "PAWN",
+        "from": "d7",
+        "to": "d5",
+        "decisionTimeMs": 1000,
+        "clockBeforeMs": 59000,
+        "clockAfterMs": 58000
+      }
+    },
+    {
+      "eventId": "c1-e4",
+      "timestamp": "2026-09-01T12:00:05Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-1",
+      "sequence": 4,
+      "playerId": "chess-alice",
+      "type": "MOVE_PLAYED",
+      "data": {
+        "moveNumber": 3,
+        "piece": "PAWN",
+        "from": "e4",
+        "to": "d5",
+        "decisionTimeMs": 1000,
+        "clockBeforeMs": 58000,
+        "clockAfterMs": 57000
+      }
+    },
+    {
+      "eventId": "c1-e5",
+      "timestamp": "2026-09-01T12:00:06Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-1",
+      "sequence": 5,
+      "playerId": "chess-bob",
+      "type": "MOVE_PLAYED",
+      "data": {
+        "moveNumber": 4,
+        "piece": "KNIGHT",
+        "from": "g8",
+        "to": "f6",
+        "decisionTimeMs": 1000,
+        "clockBeforeMs": 58000,
+        "clockAfterMs": 57000
+      }
+    },
+    {
+      "eventId": "c1-e6",
+      "timestamp": "2026-09-01T12:00:07Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-1",
+      "sequence": 6,
+      "playerId": "chess-alice",
+      "type": "MOVE_PLAYED",
+      "data": {
+        "moveNumber": 5,
+        "piece": "BISHOP",
+        "from": "f1",
+        "to": "b5",
+        "decisionTimeMs": 1000,
+        "clockBeforeMs": 57000,
+        "clockAfterMs": 56000
+      }
+    },
+    {
+      "eventId": "c1-e7",
+      "timestamp": "2026-09-01T12:00:08Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-1",
+      "sequence": 7,
+      "playerId": "chess-alice",
+      "type": "PIECE_CAPTURED",
+      "data": {
+        "moveEventId": "c1-e6",
+        "capturedPiece": "PAWN",
+        "capturedPlayerId": "chess-bob"
+      }
+    },
+    {
+      "eventId": "c1-e8",
+      "timestamp": "2026-09-01T12:00:09Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-1",
+      "sequence": 8,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "winnerPlayerId": "chess-alice",
+        "reason": "CHECKMATE"
+      }
+    }
+  ]
+}

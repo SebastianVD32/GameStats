@@ -1,5 +1,12 @@
 .cache/
 
+# Scala (keep existing generated files locally, exclude them from Git)
+scala-analytics/target/
+scala-analytics/project/target/
+scala-analytics/.bsp/
+scala-analytics/.metals/
+scala-analytics/output/
+
 # Go
 go-ingestion/bin/
 go-ingestion/coverage.out

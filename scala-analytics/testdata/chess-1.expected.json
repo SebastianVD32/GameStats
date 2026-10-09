@@ -1,0 +1,43 @@
+{
+  "gameId": "CHESS",
+  "gameVersion": "1.0",
+  "matchId": "chess-1",
+  "winnerPlayerId": "chess-alice",
+  "winnerColor": "WHITE",
+  "reason": "CHECKMATE",
+  "durationMs": 9000,
+  "totalMoves": 5,
+  "totalCaptures": 1,
+  "players": [
+    {
+      "playerId": "chess-alice",
+      "color": "WHITE",
+      "moves": 3,
+      "captures": 1,
+      "totalDecisionTimeMs": 3000,
+      "averageDecisionTimeMs": 1000.0,
+      "averageCaptureDecisionTimeMs": 1000.0,
+      "timePressure": true,
+      "pressureWindows": [
+        {
+          "moveEventIds": [
+            "c1-e2",
+            "c1-e4",
+            "c1-e6"
+          ]
+        }
+      ]
+    },
+    {
+      "playerId": "chess-bob",
+      "color": "BLACK",
+      "moves": 2,
+      "captures": 0,
+      "totalDecisionTimeMs": 2000,
+      "averageDecisionTimeMs": 1000.0,
+      "averageCaptureDecisionTimeMs": null,
+      "timePressure": false,
+      "pressureWindows": []
+    }
+  ]
+}

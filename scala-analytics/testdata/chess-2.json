@@ -1,0 +1,45 @@
+{
+  "gameId": "CHESS",
+  "gameVersion": "1.0",
+  "matchId": "chess-2",
+  "events": [
+    {
+      "eventId": "c2-e1",
+      "timestamp": "2026-09-01T12:00:01Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-2",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "participants": [
+          {
+            "playerId": "chess-carol",
+            "color": "WHITE"
+          },
+          {
+            "playerId": "chess-dan",
+            "color": "BLACK"
+          }
+        ],
+        "initialClockMs": 300000,
+        "incrementMs": 2000
+      }
+    },
+    {
+      "eventId": "c2-e2",
+      "timestamp": "2026-09-01T12:00:10Z",
+      "gameId": "CHESS",
+      "gameVersion": "1.0",
+      "matchId": "chess-2",
+      "sequence": 2,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "winnerPlayerId": null,
+        "reason": "DRAW"
+      }
+    }
+  ]
+}
