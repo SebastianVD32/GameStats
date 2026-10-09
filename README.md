@@ -1,10 +1,11 @@
 # GameStats
 
-GameStats procesa eventos de ajedrez, baloncesto y carreras. Este repositorio contiene actualmente el módulo de ingestión y control de flujo desarrollado en Go; el análisis estadístico funcional se integrará como un servicio Scala independiente.
+GameStats procesa eventos de ajedrez, baloncesto y carreras. Este repositorio contiene el módulo de ingestión y control de flujo desarrollado en Go y una primera etapa de análisis funcional de ajedrez en Scala mediante archivos. La integración HTTP se desarrollará como un servicio Scala independiente.
 
 ## Módulo disponible
 
 - [Servicio de ingestión Go](go-ingestion/README.md): API REST, carga desde archivos, validación, deduplicación, estado por partida y entrega al analizador.
+- [Análisis Scala y Docker](scala-analytics/README.md): primera etapa de ajedrez, pruebas y entrega Go → archivo → Scala sin instalaciones locales de Java o Scala.
 - [Contrato de eventos](Docs/contrato-eventos-go.md): estructura JSON y reglas implementadas para cada juego.
 - [Flujo de Git y commits](Docs/flujo-git.md): rama recomendada, commits parciales, publicación, merge y limpieza.
 
