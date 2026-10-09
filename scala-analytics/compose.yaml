@@ -1,0 +1,21 @@
+services:
+  scala-dev:
+    image: sbtscala/scala-sbt:amazoncorretto-al2023-21.0.7_1.11.1_3.3.6
+    working_dir: /app
+    volumes:
+      - .:/app
+      - sbt-cache:/root/.sbt
+      - ivy-cache:/root/.ivy2
+      - coursier-cache:/root/.cache/coursier
+    command: ["sbt", "run testdata/chess-1.json output/chess-1.result.json"]
+
+  chess-cli:
+    build: .
+    volumes:
+      - ./testdata:/data:ro
+    command: ["/data/chess-1.json"]
+
+volumes:
+  sbt-cache:
+  ivy-cache:
+  coursier-cache:
