@@ -17,10 +17,30 @@ if ($LASTEXITCODE -ne 0) { throw 'Go ingestion failed' }
 $batches = @(Get-Content -LiteralPath (Join-Path $exchange 'ready-matches.jsonl') -Encoding UTF8 | ForEach-Object { $_ | ConvertFrom-Json })
 if ($batches.Count -ne 9) { throw 'Expected exactly nine Go batches' }
 $utf8 = [System.Text.UTF8Encoding]::new($false)
-foreach ($id in @('chess-1', 'chess-2', 'chess-3', 'basket-1', 'basket-2', 'basket-3')) {
+foreach ($id in @('chess-1', 'chess-2', 'chess-3', 'basket-1', 'basket-2', 'basket-3', 'race-1', 'race-2', 'race-3')) {
     $match = @($batches | Where-Object { $_.matchId -eq $id })
     if ($match.Count -ne 1) { throw "Expected exactly one Go batch for $id" }
     [System.IO.File]::WriteAllText((Join-Path $exchange "$id.json"), ($match[0] | ConvertTo-Json -Depth 50), $utf8)
+    if ($id -eq 'race-3') {
+        # Preserve the inconsistent Go fixture and verify the analytical rejection.
+        $diagnosticPath = Join-Path $exchange 'race-3.error.txt'
+        # Compose may forward container diagnostics through stdout or stderr.
+        # Capture both as text, avoiding PowerShell's formatted ErrorRecord files.
+        $previousPreference = $ErrorActionPreference
+        try {
+            $ErrorActionPreference = 'Continue'
+            $diagnosticLines = @(docker compose -f $scalaCompose run --rm -T --no-deps --volume "${exchange}:/exchange" chess-cli "/exchange/$id.json" 2>&1 |
+                ForEach-Object { $_.ToString() })
+            $analysisExitCode = $LASTEXITCODE
+        } finally { $ErrorActionPreference = $previousPreference }
+        $diagnostic = $diagnosticLines -join [Environment]::NewLine
+        [System.IO.File]::WriteAllText($diagnosticPath, $diagnostic + [Environment]::NewLine, $utf8)
+        if ($analysisExitCode -ne 1) { throw "Expected race-3 classification rejection with exit code 1; got $analysisExitCode. Diagnostic: $diagnosticPath`n$diagnostic" }
+        if (-not $diagnostic.Contains('Classification inconsistency')) { throw "Missing race-3 inconsistency diagnostic. Captured output: $diagnosticPath`n$diagnostic" }
+        if (-not $diagnostic.Contains('ClassificationEntry(race-alice,2)') -or
+            -not $diagnostic.Contains('ClassificationEntry(race-dan,3)')) { throw 'Unexpected calculated race-3 order' }
+        continue
+    }
     docker compose -f $scalaCompose run --rm --no-deps --volume "${exchange}:/exchange" chess-cli "/exchange/$id.json" "/exchange/$id.result.json"
     if ($LASTEXITCODE -ne 0) { throw "Scala analysis failed for $id" }
     $actual = Get-Content -LiteralPath (Join-Path $exchange "$id.result.json") -Raw -Encoding UTF8 | ConvertFrom-Json
@@ -33,5 +53,5 @@ foreach ($id in @('chess-1', 'chess-2', 'chess-3', 'basket-1', 'basket-2', 'bask
         }
     }
 }
-Write-Host 'Integration OK: Go produced 9 batches; Scala analyzed 3 chess and 3 basketball matches.'
+Write-Host 'Integration OK: Go produced 9 batches; Scala analyzed 8 matches and rejected inconsistent race-3.'
 Write-Host "Results: $exchange"
