@@ -1,0 +1,112 @@
+{
+  "gameId": "RACING",
+  "gameVersion": "1.0",
+  "matchId": "race-3",
+  "events": [
+    {
+      "eventId": "r3-e1",
+      "timestamp": "2026-09-01T12:00:02Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-3",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "driverIds": [
+          "race-alice",
+          "race-dan",
+          "race-erin"
+        ],
+        "plannedLaps": 1
+      }
+    },
+    {
+      "eventId": "r3-e2",
+      "timestamp": "2026-09-01T12:00:11Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-3",
+      "sequence": 2,
+      "playerId": "race-dan",
+      "type": "PENALTY_APPLIED",
+      "data": {
+        "penaltyType": "TIME",
+        "value": 5000,
+        "reason": "track limits",
+        "lapNumber": 1
+      }
+    },
+    {
+      "eventId": "r3-e3",
+      "timestamp": "2026-09-01T12:00:12Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-3",
+      "sequence": 3,
+      "playerId": "race-alice",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 90000,
+        "position": 3
+      }
+    },
+    {
+      "eventId": "r3-e4",
+      "timestamp": "2026-09-01T12:00:13Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-3",
+      "sequence": 4,
+      "playerId": "race-dan",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 88000,
+        "position": 1
+      }
+    },
+    {
+      "eventId": "r3-e5",
+      "timestamp": "2026-09-01T12:00:14Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-3",
+      "sequence": 5,
+      "playerId": "race-erin",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 89000,
+        "position": 2
+      }
+    },
+    {
+      "eventId": "r3-e6",
+      "timestamp": "2026-09-01T12:00:15Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-3",
+      "sequence": 6,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "classification": [
+          {
+            "playerId": "race-erin",
+            "position": 1
+          },
+          {
+            "playerId": "race-dan",
+            "position": 2
+          },
+          {
+            "playerId": "race-alice",
+            "position": 3
+          }
+        ]
+      }
+    }
+  ]
+}

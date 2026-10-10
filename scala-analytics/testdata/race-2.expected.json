@@ -1,0 +1,77 @@
+{
+  "gameId": "RACING",
+  "gameVersion": "1.0",
+  "matchId": "race-2",
+  "durationMs": 9000,
+  "drivers": [
+    {
+      "playerId": "race-carol",
+      "completedLaps": 1,
+      "bestLapTimeMs": 95000,
+      "averageLapTimeMs": 95000.0,
+      "totalTimeMs": 95000,
+      "pitStops": 1,
+      "stops": [
+        {
+          "stopId": "r2-stop-1",
+          "entryEventId": "r2-e2",
+          "exitEventId": "r2-e3",
+          "entryLapNumber": 1,
+          "exitLapNumber": 1,
+          "durationMs": 1000
+        }
+      ],
+      "timePenaltyMs": 0,
+      "positionPenalty": 0,
+      "adjustedTimeMs": 95000,
+      "positionWithoutPenalties": 2,
+      "finalPosition": 2,
+      "positionChange": 0,
+      "comeback": false
+    },
+    {
+      "playerId": "race-dan",
+      "completedLaps": 1,
+      "bestLapTimeMs": 93000,
+      "averageLapTimeMs": 93000.0,
+      "totalTimeMs": 93000,
+      "pitStops": 0,
+      "stops": [],
+      "timePenaltyMs": 0,
+      "positionPenalty": 0,
+      "adjustedTimeMs": 93000,
+      "positionWithoutPenalties": 1,
+      "finalPosition": 1,
+      "positionChange": 0,
+      "comeback": false
+    }
+  ],
+  "classificationWithoutPenalties": [
+    {
+      "playerId": "race-dan",
+      "position": 1
+    },
+    {
+      "playerId": "race-carol",
+      "position": 2
+    }
+  ],
+  "classification": [
+    {
+      "playerId": "race-dan",
+      "position": 1
+    },
+    {
+      "playerId": "race-carol",
+      "position": 2
+    }
+  ],
+  "fastestLaps": [
+    {
+      "playerId": "race-dan",
+      "eventId": "r2-e5",
+      "lapNumber": 1,
+      "lapTimeMs": 93000
+    }
+  ]
+}

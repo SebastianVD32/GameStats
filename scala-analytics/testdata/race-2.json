@@ -1,0 +1,106 @@
+{
+  "gameId": "RACING",
+  "gameVersion": "1.0",
+  "matchId": "race-2",
+  "events": [
+    {
+      "eventId": "r2-e1",
+      "timestamp": "2026-09-01T12:00:01Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-2",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "driverIds": [
+          "race-carol",
+          "race-dan"
+        ],
+        "plannedLaps": 1
+      }
+    },
+    {
+      "eventId": "r2-e2",
+      "timestamp": "2026-09-01T12:00:06Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-2",
+      "sequence": 2,
+      "playerId": "race-carol",
+      "type": "PIT_ENTERED",
+      "data": {
+        "stopId": "r2-stop-1",
+        "lapNumber": 1,
+        "reason": "tire change"
+      }
+    },
+    {
+      "eventId": "r2-e3",
+      "timestamp": "2026-09-01T12:00:07Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-2",
+      "sequence": 3,
+      "playerId": "race-carol",
+      "type": "PIT_EXITED",
+      "data": {
+        "stopId": "r2-stop-1",
+        "lapNumber": 1,
+        "tireCompound": "SOFT"
+      }
+    },
+    {
+      "eventId": "r2-e4",
+      "timestamp": "2026-09-01T12:00:08Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-2",
+      "sequence": 4,
+      "playerId": "race-carol",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 95000,
+        "position": 2
+      }
+    },
+    {
+      "eventId": "r2-e5",
+      "timestamp": "2026-09-01T12:00:09Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-2",
+      "sequence": 5,
+      "playerId": "race-dan",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 93000,
+        "position": 1
+      }
+    },
+    {
+      "eventId": "r2-e6",
+      "timestamp": "2026-09-01T12:00:10Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-2",
+      "sequence": 6,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "classification": [
+          {
+            "playerId": "race-dan",
+            "position": 1
+          },
+          {
+            "playerId": "race-carol",
+            "position": 2
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -48,3 +48,22 @@ final case class ScoringRun(teamId: String, points: Long, shotEventIds: Vector[S
 final case class BasketballResult(gameId: String, gameVersion: String, matchId: String,
   durationMs: Long, players: Vector[BasketballPlayerStats], teams: Vector[BasketballTeamStats],
   scoringRuns: Vector[ScoringRun])
+
+final case class RacingStart(driverIds: Vector[String], plannedLaps: Int)
+final case class Lap(lapNumber: Int, lapTimeMs: Long, position: Int)
+final case class PitEntry(stopId: String, lapNumber: Int, reason: String)
+final case class PitExit(stopId: String, lapNumber: Int, tireCompound: String)
+final case class Penalty(penaltyType: String, value: Long, reason: String, lapNumber: Int)
+final case class ClassificationEntry(playerId: String, position: Int)
+final case class RacingFinish(classification: Vector[ClassificationEntry])
+final case class PitStopStats(stopId: String, entryEventId: String, exitEventId: String,
+  entryLapNumber: Int, exitLapNumber: Int, durationMs: Long)
+final case class FastestLap(playerId: String, eventId: String, lapNumber: Int, lapTimeMs: Long)
+final case class RacingDriverStats(playerId: String, completedLaps: Int, bestLapTimeMs: Long,
+  averageLapTimeMs: Double, totalTimeMs: BigInt, pitStops: Int, stops: Vector[PitStopStats],
+  timePenaltyMs: BigInt, positionPenalty: BigInt, adjustedTimeMs: BigInt,
+  positionWithoutPenalties: Int, finalPosition: Int, positionChange: Int, comeback: Boolean)
+final case class RacingResult(gameId: String, gameVersion: String, matchId: String,
+  durationMs: Long, drivers: Vector[RacingDriverStats],
+  classificationWithoutPenalties: Vector[ClassificationEntry], classification: Vector[ClassificationEntry],
+  fastestLaps: Vector[FastestLap])

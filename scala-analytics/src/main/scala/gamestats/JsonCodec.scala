@@ -45,6 +45,18 @@ object JsonCodec {
   given Encoder[BasketballTeamStats] = deriveEncoder
   given Encoder[ScoringRun] = deriveEncoder
   given Encoder[BasketballResult] = deriveEncoder
+  given Decoder[RacingStart] = strict(deriveDecoder[RacingStart], "driverIds", "plannedLaps")
+  given Decoder[Lap] = strict(deriveDecoder[Lap], "lapNumber", "lapTimeMs", "position")
+  given Decoder[PitEntry] = strict(deriveDecoder[PitEntry], "stopId", "lapNumber", "reason")
+  given Decoder[PitExit] = strict(deriveDecoder[PitExit], "stopId", "lapNumber", "tireCompound")
+  given Decoder[Penalty] = strict(deriveDecoder[Penalty], "penaltyType", "value", "reason", "lapNumber")
+  given Decoder[ClassificationEntry] = strict(deriveDecoder[ClassificationEntry], "playerId", "position")
+  given Decoder[RacingFinish] = strict(deriveDecoder[RacingFinish], "classification")
+  given Encoder[ClassificationEntry] = deriveEncoder
+  given Encoder[PitStopStats] = deriveEncoder
+  given Encoder[FastestLap] = deriveEncoder
+  given Encoder[RacingDriverStats] = deriveEncoder
+  given Encoder[RacingResult] = deriveEncoder
   def payload[A: Decoder](event: Event): Either[String, A] =
     event.data.as[A].left.map(error => s"${event.eventId}: ${error.message}")
 }

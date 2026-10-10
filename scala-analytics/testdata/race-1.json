@@ -1,0 +1,76 @@
+{
+  "gameId": "RACING",
+  "gameVersion": "1.0",
+  "matchId": "race-1",
+  "events": [
+    {
+      "eventId": "r1-e1",
+      "timestamp": "2026-09-01T12:00:00Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-1",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "driverIds": [
+          "race-alice",
+          "race-bob"
+        ],
+        "plannedLaps": 1
+      }
+    },
+    {
+      "eventId": "r1-e2",
+      "timestamp": "2026-09-01T12:00:03Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-1",
+      "sequence": 2,
+      "playerId": "race-alice",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 90000,
+        "position": 1
+      }
+    },
+    {
+      "eventId": "r1-e3",
+      "timestamp": "2026-09-01T12:00:04Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-1",
+      "sequence": 3,
+      "playerId": "race-bob",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 91000,
+        "position": 2
+      }
+    },
+    {
+      "eventId": "r1-e4",
+      "timestamp": "2026-09-01T12:00:05Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-1",
+      "sequence": 4,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "classification": [
+          {
+            "playerId": "race-alice",
+            "position": 1
+          },
+          {
+            "playerId": "race-bob",
+            "position": 2
+          }
+        ]
+      }
+    }
+  ]
+}

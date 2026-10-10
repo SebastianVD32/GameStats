@@ -18,6 +18,7 @@ object Main {
         result <- batch.gameId match {
           case "CHESS" => ChessAnalysis.analyze(batch).map(_.asJson)
           case "BASKETBALL" => BasketballAnalysis.analyze(batch).map(_.asJson)
+          case "RACING" => RacingAnalysis.analyze(batch).map(_.asJson)
           case other => Left(s"Unsupported game: $other")
         }
       } yield result.spaces2

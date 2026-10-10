@@ -1,0 +1,92 @@
+{
+  "gameId": "RACING",
+  "gameVersion": "1.0",
+  "matchId": "race-3",
+  "durationMs": 13000,
+  "drivers": [
+    {
+      "playerId": "race-alice",
+      "completedLaps": 1,
+      "bestLapTimeMs": 90000,
+      "averageLapTimeMs": 90000.0,
+      "totalTimeMs": 90000,
+      "pitStops": 0,
+      "stops": [],
+      "timePenaltyMs": 0,
+      "positionPenalty": 0,
+      "adjustedTimeMs": 90000,
+      "positionWithoutPenalties": 3,
+      "finalPosition": 2,
+      "positionChange": 1,
+      "comeback": false
+    },
+    {
+      "playerId": "race-dan",
+      "completedLaps": 1,
+      "bestLapTimeMs": 88000,
+      "averageLapTimeMs": 88000.0,
+      "totalTimeMs": 88000,
+      "pitStops": 0,
+      "stops": [],
+      "timePenaltyMs": 5000,
+      "positionPenalty": 0,
+      "adjustedTimeMs": 93000,
+      "positionWithoutPenalties": 1,
+      "finalPosition": 3,
+      "positionChange": -2,
+      "comeback": false
+    },
+    {
+      "playerId": "race-erin",
+      "completedLaps": 1,
+      "bestLapTimeMs": 89000,
+      "averageLapTimeMs": 89000.0,
+      "totalTimeMs": 89000,
+      "pitStops": 0,
+      "stops": [],
+      "timePenaltyMs": 0,
+      "positionPenalty": 0,
+      "adjustedTimeMs": 89000,
+      "positionWithoutPenalties": 2,
+      "finalPosition": 1,
+      "positionChange": 1,
+      "comeback": false
+    }
+  ],
+  "classificationWithoutPenalties": [
+    {
+      "playerId": "race-dan",
+      "position": 1
+    },
+    {
+      "playerId": "race-erin",
+      "position": 2
+    },
+    {
+      "playerId": "race-alice",
+      "position": 3
+    }
+  ],
+  "classification": [
+    {
+      "playerId": "race-erin",
+      "position": 1
+    },
+    {
+      "playerId": "race-alice",
+      "position": 2
+    },
+    {
+      "playerId": "race-dan",
+      "position": 3
+    }
+  ],
+  "fastestLaps": [
+    {
+      "playerId": "race-dan",
+      "eventId": "r3-e4",
+      "lapNumber": 1,
+      "lapTimeMs": 88000
+    }
+  ]
+}
