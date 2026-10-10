@@ -1,0 +1,109 @@
+{
+  "gameId": "BASKETBALL",
+  "gameVersion": "1.0",
+  "matchId": "basket-2",
+  "events": [
+    {
+      "eventId": "b2-e1",
+      "timestamp": "2026-09-01T12:00:01Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-2",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "teams": [
+          {
+            "teamId": "b2-home",
+            "playerIds": [
+              "b2-h1",
+              "b2-h2"
+            ]
+          },
+          {
+            "teamId": "b2-away",
+            "playerIds": [
+              "b2-a1",
+              "b2-a2"
+            ]
+          }
+        ],
+        "periods": 4
+      }
+    },
+    {
+      "eventId": "b2-e2",
+      "timestamp": "2026-09-01T12:00:08Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-2",
+      "sequence": 2,
+      "playerId": "b2-h1",
+      "type": "SHOT_ATTEMPTED",
+      "data": {
+        "teamId": "b2-home",
+        "period": 1,
+        "periodTimeRemainingMs": 500000,
+        "shotValue": 3,
+        "made": true
+      }
+    },
+    {
+      "eventId": "b2-e3",
+      "timestamp": "2026-09-01T12:00:09Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-2",
+      "sequence": 3,
+      "playerId": "b2-h2",
+      "type": "SHOT_ATTEMPTED",
+      "data": {
+        "teamId": "b2-home",
+        "period": 1,
+        "periodTimeRemainingMs": 490000,
+        "shotValue": 3,
+        "made": true
+      }
+    },
+    {
+      "eventId": "b2-e4",
+      "timestamp": "2026-09-01T12:00:10Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-2",
+      "sequence": 4,
+      "playerId": "b2-h1",
+      "type": "SHOT_ATTEMPTED",
+      "data": {
+        "teamId": "b2-home",
+        "period": 1,
+        "periodTimeRemainingMs": 480000,
+        "shotValue": 2,
+        "made": true
+      }
+    },
+    {
+      "eventId": "b2-e5",
+      "timestamp": "2026-09-01T12:00:11Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-2",
+      "sequence": 5,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "scores": [
+          {
+            "teamId": "b2-home",
+            "points": 8
+          },
+          {
+            "teamId": "b2-away",
+            "points": 0
+          }
+        ]
+      }
+    }
+  ]
+}

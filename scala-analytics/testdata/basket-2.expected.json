@@ -1,0 +1,184 @@
+{
+  "gameId": "BASKETBALL",
+  "gameVersion": "1.0",
+  "matchId": "basket-2",
+  "durationMs": 10000,
+  "players": [
+    {
+      "playerId": "b2-h1",
+      "teamId": "b2-home",
+      "points": 5,
+      "assists": 0,
+      "rebounds": 0,
+      "offensiveRebounds": 0,
+      "defensiveRebounds": 0,
+      "turnovers": 0,
+      "fouls": 0,
+      "fieldGoals": {
+        "made": 2,
+        "attempted": 2,
+        "percentage": 100.0
+      },
+      "threePointers": {
+        "made": 1,
+        "attempted": 1,
+        "percentage": 100.0
+      },
+      "freeThrows": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "assistedBasketPoints": 0,
+      "pointsCreatedByAssists": 0,
+      "excluded": false,
+      "fifthFoul": null
+    },
+    {
+      "playerId": "b2-h2",
+      "teamId": "b2-home",
+      "points": 3,
+      "assists": 0,
+      "rebounds": 0,
+      "offensiveRebounds": 0,
+      "defensiveRebounds": 0,
+      "turnovers": 0,
+      "fouls": 0,
+      "fieldGoals": {
+        "made": 1,
+        "attempted": 1,
+        "percentage": 100.0
+      },
+      "threePointers": {
+        "made": 1,
+        "attempted": 1,
+        "percentage": 100.0
+      },
+      "freeThrows": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "assistedBasketPoints": 0,
+      "pointsCreatedByAssists": 0,
+      "excluded": false,
+      "fifthFoul": null
+    },
+    {
+      "playerId": "b2-a1",
+      "teamId": "b2-away",
+      "points": 0,
+      "assists": 0,
+      "rebounds": 0,
+      "offensiveRebounds": 0,
+      "defensiveRebounds": 0,
+      "turnovers": 0,
+      "fouls": 0,
+      "fieldGoals": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "threePointers": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "freeThrows": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "assistedBasketPoints": 0,
+      "pointsCreatedByAssists": 0,
+      "excluded": false,
+      "fifthFoul": null
+    },
+    {
+      "playerId": "b2-a2",
+      "teamId": "b2-away",
+      "points": 0,
+      "assists": 0,
+      "rebounds": 0,
+      "offensiveRebounds": 0,
+      "defensiveRebounds": 0,
+      "turnovers": 0,
+      "fouls": 0,
+      "fieldGoals": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "threePointers": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "freeThrows": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "assistedBasketPoints": 0,
+      "pointsCreatedByAssists": 0,
+      "excluded": false,
+      "fifthFoul": null
+    }
+  ],
+  "teams": [
+    {
+      "teamId": "b2-home",
+      "points": 8,
+      "assistedBasketPoints": 0,
+      "fieldGoals": {
+        "made": 3,
+        "attempted": 3,
+        "percentage": 100.0
+      },
+      "threePointers": {
+        "made": 2,
+        "attempted": 2,
+        "percentage": 100.0
+      },
+      "freeThrows": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      }
+    },
+    {
+      "teamId": "b2-away",
+      "points": 0,
+      "assistedBasketPoints": 0,
+      "fieldGoals": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "threePointers": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      },
+      "freeThrows": {
+        "made": 0,
+        "attempted": 0,
+        "percentage": null
+      }
+    }
+  ],
+  "scoringRuns": [
+    {
+      "teamId": "b2-home",
+      "points": 8,
+      "shotEventIds": [
+        "b2-e2",
+        "b2-e3",
+        "b2-e4"
+      ],
+      "startEventId": "b2-e2",
+      "endEventId": "b2-e4",
+      "thresholdEventId": "b2-e4"
+    }
+  ]
+}

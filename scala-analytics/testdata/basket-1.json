@@ -1,0 +1,124 @@
+{
+  "gameId": "BASKETBALL",
+  "gameVersion": "1.0",
+  "matchId": "basket-1",
+  "events": [
+    {
+      "eventId": "b1-e1",
+      "timestamp": "2026-09-01T12:00:00Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-1",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "teams": [
+          {
+            "teamId": "b1-home",
+            "playerIds": [
+              "b1-h1",
+              "b1-h2"
+            ]
+          },
+          {
+            "teamId": "b1-away",
+            "playerIds": [
+              "b1-a1",
+              "b1-a2"
+            ]
+          }
+        ],
+        "periods": 4
+      }
+    },
+    {
+      "eventId": "b1-e2",
+      "timestamp": "2026-09-01T12:00:03Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-1",
+      "sequence": 2,
+      "playerId": "b1-h1",
+      "type": "SHOT_ATTEMPTED",
+      "data": {
+        "teamId": "b1-home",
+        "period": 1,
+        "periodTimeRemainingMs": 600000,
+        "shotValue": 2,
+        "made": true
+      }
+    },
+    {
+      "eventId": "b1-e3",
+      "timestamp": "2026-09-01T12:00:04Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-1",
+      "sequence": 3,
+      "playerId": "b1-h2",
+      "type": "ASSIST_RECORDED",
+      "data": {
+        "teamId": "b1-home",
+        "period": 1,
+        "scorerId": "b1-h1",
+        "shotEventId": "b1-e2"
+      }
+    },
+    {
+      "eventId": "b1-e4",
+      "timestamp": "2026-09-01T12:00:05Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-1",
+      "sequence": 4,
+      "playerId": "b1-a1",
+      "type": "SHOT_ATTEMPTED",
+      "data": {
+        "teamId": "b1-away",
+        "period": 1,
+        "periodTimeRemainingMs": 590000,
+        "shotValue": 3,
+        "made": false
+      }
+    },
+    {
+      "eventId": "b1-e5",
+      "timestamp": "2026-09-01T12:00:06Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-1",
+      "sequence": 5,
+      "playerId": "b1-h1",
+      "type": "REBOUND_COLLECTED",
+      "data": {
+        "teamId": "b1-home",
+        "period": 1,
+        "reboundType": "DEFENSIVE",
+        "shotEventId": "b1-e4"
+      }
+    },
+    {
+      "eventId": "b1-e6",
+      "timestamp": "2026-09-01T12:00:07Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-1",
+      "sequence": 6,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "scores": [
+          {
+            "teamId": "b1-home",
+            "points": 2
+          },
+          {
+            "teamId": "b1-away",
+            "points": 0
+          }
+        ]
+      }
+    }
+  ]
+}

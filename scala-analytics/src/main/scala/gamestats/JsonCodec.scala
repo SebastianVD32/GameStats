@@ -30,6 +30,21 @@ object JsonCodec {
 
   def decodeBatch(text: String): Either[String, MatchBatch] =
     parse(text).left.map(_.message).flatMap(_.as[MatchBatch].left.map(_.message))
+  given Decoder[BasketballTeam] = strict(deriveDecoder[BasketballTeam], "teamId", "playerIds")
+  given Decoder[BasketballStart] = strict(deriveDecoder[BasketballStart], "teams", "periods")
+  given Decoder[Shot] = strict(deriveDecoder[Shot], "teamId", "period", "periodTimeRemainingMs", "shotValue", "made")
+  given Decoder[Assist] = strict(deriveDecoder[Assist], "teamId", "period", "scorerId", "shotEventId")
+  given Decoder[Rebound] = strict(deriveDecoder[Rebound], "teamId", "period", "reboundType", "shotEventId")
+  given Decoder[Turnover] = strict(deriveDecoder[Turnover], "teamId", "period", "reason")
+  given Decoder[Foul] = strict(deriveDecoder[Foul], "teamId", "period", "affectedPlayerId", "reason")
+  given Decoder[TeamScore] = strict(deriveDecoder[TeamScore], "teamId", "points")
+  given Decoder[BasketballFinish] = strict(deriveDecoder[BasketballFinish], "scores")
+  given Encoder[ShootingStats] = deriveEncoder
+  given Encoder[FifthFoul] = deriveEncoder
+  given Encoder[BasketballPlayerStats] = deriveEncoder
+  given Encoder[BasketballTeamStats] = deriveEncoder
+  given Encoder[ScoringRun] = deriveEncoder
+  given Encoder[BasketballResult] = deriveEncoder
   def payload[A: Decoder](event: Event): Either[String, A] =
     event.data.as[A].left.map(error => s"${event.eventId}: ${error.message}")
 }

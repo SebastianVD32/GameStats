@@ -1,0 +1,138 @@
+{
+  "gameId": "BASKETBALL",
+  "gameVersion": "1.0",
+  "matchId": "basket-3",
+  "events": [
+    {
+      "eventId": "b3-e1",
+      "timestamp": "2026-09-01T12:00:02Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-3",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "teams": [
+          {
+            "teamId": "b3-home",
+            "playerIds": [
+              "b3-h1",
+              "b3-h2"
+            ]
+          },
+          {
+            "teamId": "b3-away",
+            "playerIds": [
+              "b3-a1",
+              "b3-a2"
+            ]
+          }
+        ],
+        "periods": 4
+      }
+    },
+    {
+      "eventId": "b3-e2",
+      "timestamp": "2026-09-01T12:00:12Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-3",
+      "sequence": 2,
+      "playerId": "b3-h1",
+      "type": "FOUL_COMMITTED",
+      "data": {
+        "teamId": "b3-home",
+        "period": 1,
+        "affectedPlayerId": "b3-a1",
+        "reason": "personal"
+      }
+    },
+    {
+      "eventId": "b3-e3",
+      "timestamp": "2026-09-01T12:00:13Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-3",
+      "sequence": 3,
+      "playerId": "b3-h1",
+      "type": "FOUL_COMMITTED",
+      "data": {
+        "teamId": "b3-home",
+        "period": 2,
+        "affectedPlayerId": "b3-a1",
+        "reason": "personal"
+      }
+    },
+    {
+      "eventId": "b3-e4",
+      "timestamp": "2026-09-01T12:00:14Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-3",
+      "sequence": 4,
+      "playerId": "b3-h1",
+      "type": "FOUL_COMMITTED",
+      "data": {
+        "teamId": "b3-home",
+        "period": 2,
+        "affectedPlayerId": "b3-a2",
+        "reason": "personal"
+      }
+    },
+    {
+      "eventId": "b3-e5",
+      "timestamp": "2026-09-01T12:00:15Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-3",
+      "sequence": 5,
+      "playerId": "b3-h1",
+      "type": "FOUL_COMMITTED",
+      "data": {
+        "teamId": "b3-home",
+        "period": 3,
+        "affectedPlayerId": "b3-a1",
+        "reason": "personal"
+      }
+    },
+    {
+      "eventId": "b3-e6",
+      "timestamp": "2026-09-01T12:00:16Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-3",
+      "sequence": 6,
+      "playerId": "b3-h1",
+      "type": "FOUL_COMMITTED",
+      "data": {
+        "teamId": "b3-home",
+        "period": 4,
+        "affectedPlayerId": "b3-a2",
+        "reason": "personal"
+      }
+    },
+    {
+      "eventId": "b3-e7",
+      "timestamp": "2026-09-01T12:00:17Z",
+      "gameId": "BASKETBALL",
+      "gameVersion": "1.0",
+      "matchId": "basket-3",
+      "sequence": 7,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "scores": [
+          {
+            "teamId": "b3-home",
+            "points": 0
+          },
+          {
+            "teamId": "b3-away",
+            "points": 0
+          }
+        ]
+      }
+    }
+  ]
+}

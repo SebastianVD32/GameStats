@@ -15,8 +15,12 @@ object Main {
     try {
       val analysis = for {
         batch <- JsonCodec.decodeBatch(Files.readString(Path.of(args(0)), UTF_8))
-        result <- ChessAnalysis.analyze(batch)
-      } yield result.asJson.spaces2
+        result <- batch.gameId match {
+          case "CHESS" => ChessAnalysis.analyze(batch).map(_.asJson)
+          case "BASKETBALL" => BasketballAnalysis.analyze(batch).map(_.asJson)
+          case other => Left(s"Unsupported game: $other")
+        }
+      } yield result.spaces2
       analysis match {
         case Left(error) => System.err.println(s"Analysis failed: $error"); sys.exit(1)
         case Right(json) =>
