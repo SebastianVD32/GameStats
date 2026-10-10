@@ -1,6 +1,6 @@
-# Scala y Docker: primera etapa de ajedrez
+# Scala y Docker: ajedrez y baloncesto
 
-Esta etapa convierte una partida completa del contrato Go en estadísticas JSON.
+El analizador convierte partidas completas de ajedrez y baloncesto del contrato Go en estadísticas JSON.
 Solo necesitas Docker Desktop con contenedores Linux y PowerShell; Java, Scala y
 sbt se ejecutan dentro de Docker. La primera ejecución descarga dependencias.
 
@@ -14,7 +14,7 @@ docker compose -f scala-analytics/compose.yaml run --rm scala-dev
 Get-Content scala-analytics/output/chess-1.result.json
 ```
 
-Las pruebas deben terminar con `Passed: Total 10, Failed 0, Errors 0, Passed 10`.
+Las pruebas deben terminar con `Passed: Total 21, Failed 0, Errors 0, Passed 21`.
 El segundo comando compila y ejecuta el programa sobre `testdata/chess-1.json`,
 imprime JSON y lo guarda en `output/chess-1.result.json`. `output` está excluido
 de Git. No uses la salida completa de sbt como JSON: contiene mensajes de compilación.
@@ -54,11 +54,11 @@ Desde la raíz:
 powershell -NoProfile -ExecutionPolicy Bypass -File scala-analytics/scripts/Test-GoFileIntegration.ps1
 ```
 
-El script construye las dos imágenes locales, ejecuta el Go existente sobre los
-46 eventos intercalados y extrae `chess-1` del archivo de partidas COMPLETAS
-que produce Go. Scala analiza esa salida real y guarda su resultado en una
-carpeta nueva `scala-analytics/output/integration-<id>/`. Debe mostrar
-`Integration OK: Go produced 9 batches; Scala analyzed chess-1.` y la ruta del JSON.
+El script construye las dos imágenes locales, ejecuta Go sobre los 46 eventos
+intercalados y analiza las tres partidas de ajedrez y las tres de baloncesto que
+produce Go. Compara el JSON completo cuando existe un archivo `.expected.json`.
+Debe mostrar `Integration OK: Go produced 9 batches; Scala analyzed 3 chess and 3 basketball matches.`
+y la carpeta `scala-analytics/output/integration-<id>/` con los seis resultados.
 Cada ejecución usa una carpeta distinta para no acumular líneas del FileSink.
 No inicia servidores persistentes ni cambia el código de Go.
 
@@ -113,7 +113,7 @@ su healthcheck y `depends_on` con `service_healthy` antes de activar esa URL.
 La deduplicación de la función de victorias todavía no es una garantía de
 idempotencia persistente para un futuro servicio.
 
-Baloncesto y carreras tienen contrato y pueden desarrollarse después. Pac-Man
+Baloncesto está implementado por archivo; carreras conserva su contrato y queda pendiente. Pac-Man
 no aparece en los documentos actuales y Go rechaza `PACMAN`: antes de implementarlo
 se necesita la definición actualizada. Con ese documento, el compañero deberá
 añadir el GameID, tipos y datos, validaciones de inicio/acciones/final, estado de
@@ -125,7 +125,7 @@ trabajo es `feat/scala-docker-chess`; no se hace push, merge ni despliegue.
 Dependencias: JSON con [Circe](https://circe.github.io/circe/), pruebas con
 [MUnit](https://scalameta.org/munit/docs/getting-started.html).
 
-## Validación realizada
+## Validación histórica de la primera etapa
 
 Se ejecutaron en Docker Desktop: compilación Scala, las 10 pruebas (todas pasaron),
 CLI con archivo de resultado, construcción del Dockerfile y ejecución de su imagen,
@@ -135,3 +135,30 @@ ante un JSON que no era MatchBatch. `git diff --check` no encontró errores.
 No se probaron endpoints HTTP Scala ni persistencia del servicio: pertenecen a la
 siguiente etapa y todavía no existen. No se ejecutó la suite Go ni GitHub Actions;
 el módulo Go se compiló y se ejecutó sin modificaciones para verificar el intercambio.
+
+## Baloncesto y verificación actual
+
+Consulta [la verificación de requisitos y los comandos completos](../Docs/verificacion-ajedrez-baloncesto.md).
+`BasketballAnalysis.scala` calcula puntos, asistencias, rebotes, pérdidas, faltas,
+efectividad, puntos asistidos, quinta falta y rachas de al menos ocho puntos.
+`Main` selecciona ajedrez o baloncesto a partir de `gameId`, reutilizando el lector
+JSON y la escritura existentes. Las funciones de análisis son puras.
+
+Desde la raíz, para guardar los tres resultados:
+
+```powershell
+foreach ($n in 1..3) {
+    docker compose -f scala-analytics/compose.yaml run --rm scala-dev sbt "run testdata/basket-$n.json output/basket-$n.result.json"
+}
+Get-Content scala-analytics/output/basket-2.result.json
+```
+
+Resultados: `basket-1` termina 2–0 con asistencia y rebote; `basket-2` termina 8–0
+con una racha de ocho puntos; `basket-3` termina 0–0 con quinta falta en `b3-e6`.
+Los porcentajes sin intentos son `null`. El servicio histórico `chess-cli` también
+acepta `/data/basket-1.json`, `/data/basket-2.json` y `/data/basket-3.json`.
+
+Validación del 10 de octubre de 2026: 21 pruebas aprobadas (10 de ajedrez y 11 de
+baloncesto), compilación y construcción de la imagen JVM, integración real de las
+seis partidas con nueve lotes Go y comparación de los cuatro resultados completos
+con oracle disponible. La suite Go no se ejecutó; su código quedó sin cambios.
