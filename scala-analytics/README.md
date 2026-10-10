@@ -1,6 +1,6 @@
-# Scala y Docker: ajedrez y baloncesto
+# Scala y Docker: ajedrez, baloncesto y carreras
 
-El analizador convierte partidas completas de ajedrez y baloncesto del contrato Go en estadísticas JSON.
+El analizador convierte partidas completas de ajedrez, baloncesto y carreras del contrato Go en estadísticas JSON.
 Solo necesitas Docker Desktop con contenedores Linux y PowerShell; Java, Scala y
 sbt se ejecutan dentro de Docker. La primera ejecución descarga dependencias.
 
@@ -14,7 +14,7 @@ docker compose -f scala-analytics/compose.yaml run --rm scala-dev
 Get-Content scala-analytics/output/chess-1.result.json
 ```
 
-Las pruebas deben terminar con `Passed: Total 21, Failed 0, Errors 0, Passed 21`.
+Las pruebas deben terminar con `Passed: Total 35, Failed 0, Errors 0, Passed 35`.
 El segundo comando compila y ejecuta el programa sobre `testdata/chess-1.json`,
 imprime JSON y lo guarda en `output/chess-1.result.json`. `output` está excluido
 de Git. No uses la salida completa de sbt como JSON: contiene mensajes de compilación.
@@ -55,10 +55,10 @@ powershell -NoProfile -ExecutionPolicy Bypass -File scala-analytics/scripts/Test
 ```
 
 El script construye las dos imágenes locales, ejecuta Go sobre los 46 eventos
-intercalados y analiza las tres partidas de ajedrez y las tres de baloncesto que
+intercalados y verifica las nueve partidas de los tres juegos que
 produce Go. Compara el JSON completo cuando existe un archivo `.expected.json`.
-Debe mostrar `Integration OK: Go produced 9 batches; Scala analyzed 3 chess and 3 basketball matches.`
-y la carpeta `scala-analytics/output/integration-<id>/` con los seis resultados.
+Debe mostrar `Integration OK: Go produced 9 batches; Scala analyzed 8 matches and rejected inconsistent race-3.`
+y la carpeta `scala-analytics/output/integration-<id>/` con ocho resultados y el diagnóstico de race-3.
 Cada ejecución usa una carpeta distinta para no acumular líneas del FileSink.
 No inicia servidores persistentes ni cambia el código de Go.
 
@@ -113,7 +113,7 @@ su healthcheck y `depends_on` con `service_healthy` antes de activar esa URL.
 La deduplicación de la función de victorias todavía no es una garantía de
 idempotencia persistente para un futuro servicio.
 
-Baloncesto está implementado por archivo; carreras conserva su contrato y queda pendiente. Pac-Man
+Los tres juegos están implementados por archivo. Pac-Man
 no aparece en los documentos actuales y Go rechaza `PACMAN`: antes de implementarlo
 se necesita la definición actualizada. Con ese documento, el compañero deberá
 añadir el GameID, tipos y datos, validaciones de inicio/acciones/final, estado de
@@ -136,7 +136,7 @@ No se probaron endpoints HTTP Scala ni persistencia del servicio: pertenecen a l
 siguiente etapa y todavía no existen. No se ejecutó la suite Go ni GitHub Actions;
 el módulo Go se compiló y se ejecutó sin modificaciones para verificar el intercambio.
 
-## Baloncesto y verificación actual
+## Baloncesto y verificación de su etapa
 
 Consulta [la verificación de requisitos y los comandos completos](../Docs/verificacion-ajedrez-baloncesto.md).
 `BasketballAnalysis.scala` calcula puntos, asistencias, rebotes, pérdidas, faltas,
@@ -162,3 +162,27 @@ Validación del 10 de octubre de 2026: 21 pruebas aprobadas (10 de ajedrez y 11 
 baloncesto), compilación y construcción de la imagen JVM, integración real de las
 seis partidas con nueve lotes Go y comparación de los cuatro resultados completos
 con oracle disponible. La suite Go no se ejecutó; su código quedó sin cambios.
+
+## Carreras y verificación actual
+
+[Reglas, campos de salida y comandos de carreras](../Docs/analisis-carreras.md).
+`RacingAnalysis.scala` calcula vueltas, paradas relacionadas por `stopId`,
+penalizaciones separadas, clasificación y remontadas mediante funciones puras.
+La CLI selecciona también `RACING` y conserva la lectura/escritura existente.
+
+```powershell
+foreach ($n in 1..2) {
+    docker compose -f scala-analytics/compose.yaml run --rm scala-dev sbt "run testdata/race-$n.json output/race-$n.result.json"
+}
+docker compose -f scala-analytics/compose.yaml run --rm scala-dev sbt "run testdata/race-3.json"
+```
+
+`race-1` gana Alice y `race-2` gana Dan. **race-3 original tiene una clasificación
+inconsistente**: Dan suma 93000 ms tras TIME, detrás de Alice (90000 ms), pero su
+final declara a Dan segundo. Se conserva el fixture Go; la ejecución termina
+con código 1 y reporta ambas clasificaciones. El orden calculado es Erin, Alice,
+Dan. La suite verifica el rechazo y las estadísticas completas con una copia
+corregida en memoria. El script de integración espera y verifica ese rechazo.
+
+La suite actual contiene 35 pruebas: 10 ajedrez, 11 baloncesto y 14 carreras,
+incluyendo desempates, sanciones por sequence, paradas y remontadas.
