@@ -1,4 +1,10 @@
-# Scala y Docker: ajedrez, baloncesto y carreras
+# Scala: cuatro analizadores, servicio HTTP y Docker
+
+El servicio analiza CHESS, BASKETBALL, RACING y PACMAN. Sin argumentos inicia HTTP en 0.0.0.0:8081; con uno o dos argumentos conserva la CLI. POST /api/v1/matches guarda antes de responder; GET /api/v1/matches/{matchId} consulta resultados y GET /api/v1/pacman/players/{playerId} consulta acumulados. GET /healthz comprueba disponibilidad.
+
+Consulta [contrato y pendientes Go](../Docs/contrato-pacman.md) y [comandos PowerShell, resultados esperados y verificaciones](../Docs/verificacion-pacman-docker.md). Docker Compose en la raiz conecta Go y Scala y persiste resultados en scala-results. La configuracion scala-dev de este modulo conserva el entorno sin instalaciones en Windows.
+
+## Scala y Docker: ajedrez, baloncesto y carreras
 
 El analizador convierte partidas completas de ajedrez, baloncesto y carreras del contrato Go en estadísticas JSON.
 Solo necesitas Docker Desktop con contenedores Linux y PowerShell; Java, Scala y
@@ -97,33 +103,14 @@ y rechaza resultados distintos para la misma identidad. Es una función de
 agregación probada, disponible para la siguiente etapa; la CLI actual analiza
 una partida y no mantiene un historial acumulado.
 
-## Contrato confirmado y trabajo posterior
+## Contrato y servicio actual
 
-Se revisaron el PDF, el DOCX, `Docs/contrato-eventos-go.md`, el módulo Go, sus
-pruebas y datos, Dockerfiles y los dos Compose. No se encontraron `AGENTS.md`.
-Go sigue entregando `{gameId, gameVersion, matchId, events}`. El Compose raíz
-conserva `ANALYZER_URL=http://scala-analysis:8081/api/v1/matches` como comentario;
-el HTTPSink confirma cualquier `2xx` y descarta el cuerpo de la respuesta.
-
-Esta etapa funciona por archivo. La API `POST /api/v1/matches`, `GET /healthz`,
-persistencia, consultas de resultados e idempotencia de HTTP siguen pendientes.
-Por eso el Compose raíz conserva la salida a archivo: activar la URL ahora
-rompería la entrega. La siguiente integración deberá añadir `scala-analysis`,
-su healthcheck y `depends_on` con `service_healthy` antes de activar esa URL.
-La deduplicación de la función de victorias todavía no es una garantía de
-idempotencia persistente para un futuro servicio.
-
-Los tres juegos están implementados por archivo. Pac-Man
-no aparece en los documentos actuales y Go rechaza `PACMAN`: antes de implementarlo
-se necesita la definición actualizada. Con ese documento, el compañero deberá
-añadir el GameID, tipos y datos, validaciones de inicio/acciones/final, estado de
-partida, referencias, casos válidos/inválidos y pruebas de entrega en Go.
-
-No se modificaron la lógica Go, GitHub Actions ni el Compose raíz. La rama de
-trabajo es `feat/scala-docker-chess`; no se hace push, merge ni despliegue.
-
-Dependencias: JSON con [Circe](https://circe.github.io/circe/), pruebas con
-[MUnit](https://scalameta.org/munit/docs/getting-started.html).
+El documento actualizado de Pac-Man se concreta en Docs/contrato-pacman.md.
+El Compose raiz activa ANALYZER_URL, scala-analysis, healthcheck y dependencia saludable.
+El HTTPSink Go descarta el cuerpo de la respuesta; Scala persiste antes de responder.
+La CLI sigue disponible para los cuatro juegos. Las verificaciones historicas siguientes
+corresponden a etapas anteriores; la verificacion actual esta documentada en
+Docs/verificacion-pacman-docker.md.
 
 ## Validación histórica de la primera etapa
 
@@ -133,7 +120,7 @@ y el script Go → archivo → Scala con los 46 eventos y 9 partidas. El JSON co
 de integración coincidió con `chess-1.expected.json`. La imagen devolvió código 1
 ante un JSON que no era MatchBatch. `git diff --check` no encontró errores.
 No se probaron endpoints HTTP Scala ni persistencia del servicio: pertenecen a la
-siguiente etapa y todavía no existen. No se ejecutó la suite Go ni GitHub Actions;
+siguiente etapa de esa etapa historica. No se ejecutó la suite Go ni GitHub Actions;
 el módulo Go se compiló y se ejecutó sin modificaciones para verificar el intercambio.
 
 ## Baloncesto y verificación de su etapa
