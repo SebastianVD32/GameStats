@@ -1,0 +1,30 @@
+{
+  "gameId": "PACMAN",
+  "gameVersion": "1.0",
+  "matchId": "pacman-2",
+  "playerId": "p1",
+  "normalPellets": 0,
+  "powerPellets": 1,
+  "ghosts": 3,
+  "totalScore": 1450,
+  "livesLost": 0,
+  "livesRemaining": 3,
+  "levelsCompleted": 0,
+  "durationMs": 5000,
+  "powerEffects": [
+    {
+      "powerUpEventId": "pacman-2-e2",
+      "ghostIds": [
+        "BLINKY",
+        "PINKY",
+        "INKY"
+      ],
+      "ghostEventIds": [
+        "pacman-2-e3",
+        "pacman-2-e4",
+        "pacman-2-e5"
+      ],
+      "chainEventId": "pacman-2-e5"
+    }
+  ]
+}

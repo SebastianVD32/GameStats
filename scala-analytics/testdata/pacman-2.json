@@ -1,0 +1,98 @@
+{
+  "gameId": "PACMAN",
+  "gameVersion": "1.0",
+  "matchId": "pacman-2",
+  "events": [
+    {
+      "eventId": "pacman-2-e1",
+      "timestamp": "2026-09-01T12:00:00Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-2",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "playerId": "p1",
+        "initialLives": 3,
+        "initialLevel": 1
+      }
+    },
+    {
+      "eventId": "pacman-2-e2",
+      "timestamp": "2026-09-01T12:00:01Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-2",
+      "sequence": 2,
+      "playerId": "p1",
+      "type": "POWER_UP_COLLECTED",
+      "data": {
+        "level": 1,
+        "pelletId": "a",
+        "durationMs": 10000
+      }
+    },
+    {
+      "eventId": "pacman-2-e3",
+      "timestamp": "2026-09-01T12:00:02Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-2",
+      "sequence": 3,
+      "playerId": "p1",
+      "type": "GHOST_EATEN",
+      "data": {
+        "level": 1,
+        "ghostId": "BLINKY",
+        "powerUpEventId": "pacman-2-e2"
+      }
+    },
+    {
+      "eventId": "pacman-2-e4",
+      "timestamp": "2026-09-01T12:00:03Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-2",
+      "sequence": 4,
+      "playerId": "p1",
+      "type": "GHOST_EATEN",
+      "data": {
+        "level": 1,
+        "ghostId": "PINKY",
+        "powerUpEventId": "pacman-2-e2"
+      }
+    },
+    {
+      "eventId": "pacman-2-e5",
+      "timestamp": "2026-09-01T12:00:04Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-2",
+      "sequence": 5,
+      "playerId": "p1",
+      "type": "GHOST_EATEN",
+      "data": {
+        "level": 1,
+        "ghostId": "INKY",
+        "powerUpEventId": "pacman-2-e2"
+      }
+    },
+    {
+      "eventId": "pacman-2-e6",
+      "timestamp": "2026-09-01T12:00:05Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-2",
+      "sequence": 6,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "finalScore": 1450,
+        "levelsCompleted": 0,
+        "livesRemaining": 3,
+        "reason": "SIMULATION_ENDED"
+      }
+    }
+  ]
+}

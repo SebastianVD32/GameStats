@@ -1,0 +1,198 @@
+{
+  "gameId": "PACMAN",
+  "gameVersion": "1.0",
+  "matchId": "pacman-3",
+  "events": [
+    {
+      "eventId": "pacman-3-e1",
+      "timestamp": "2026-09-01T12:00:00Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "playerId": "p2",
+        "initialLives": 3,
+        "initialLevel": 1
+      }
+    },
+    {
+      "eventId": "pacman-3-e2",
+      "timestamp": "2026-09-01T12:00:01Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 2,
+      "playerId": "p2",
+      "type": "POWER_UP_COLLECTED",
+      "data": {
+        "level": 1,
+        "pelletId": "a",
+        "durationMs": 10000
+      }
+    },
+    {
+      "eventId": "pacman-3-e3",
+      "timestamp": "2026-09-01T12:00:02Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 3,
+      "playerId": "p2",
+      "type": "GHOST_EATEN",
+      "data": {
+        "level": 1,
+        "ghostId": "BLINKY",
+        "powerUpEventId": "pacman-3-e2"
+      }
+    },
+    {
+      "eventId": "pacman-3-e4",
+      "timestamp": "2026-09-01T12:00:03Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 4,
+      "playerId": "p2",
+      "type": "GHOST_EATEN",
+      "data": {
+        "level": 1,
+        "ghostId": "PINKY",
+        "powerUpEventId": "pacman-3-e2"
+      }
+    },
+    {
+      "eventId": "pacman-3-e5",
+      "timestamp": "2026-09-01T12:00:04Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 5,
+      "playerId": "p2",
+      "type": "GHOST_EATEN",
+      "data": {
+        "level": 1,
+        "ghostId": "INKY",
+        "powerUpEventId": "pacman-3-e2"
+      }
+    },
+    {
+      "eventId": "pacman-3-e6",
+      "timestamp": "2026-09-01T12:00:05Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 6,
+      "playerId": "p2",
+      "type": "GHOST_EATEN",
+      "data": {
+        "level": 1,
+        "ghostId": "CLYDE",
+        "powerUpEventId": "pacman-3-e2"
+      }
+    },
+    {
+      "eventId": "pacman-3-e7",
+      "timestamp": "2026-09-01T12:00:06Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 7,
+      "playerId": "p2",
+      "type": "LEVEL_COMPLETED",
+      "data": {
+        "level": 1
+      }
+    },
+    {
+      "eventId": "pacman-3-e8",
+      "timestamp": "2026-09-01T12:00:07Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 8,
+      "playerId": "p2",
+      "type": "PELLET_EATEN",
+      "data": {
+        "level": 2,
+        "pelletId": "a"
+      }
+    },
+    {
+      "eventId": "pacman-3-e9",
+      "timestamp": "2026-09-01T12:00:08Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 9,
+      "playerId": "p2",
+      "type": "POWER_UP_COLLECTED",
+      "data": {
+        "level": 2,
+        "pelletId": "b",
+        "durationMs": 10000
+      }
+    },
+    {
+      "eventId": "pacman-3-e10",
+      "timestamp": "2026-09-01T12:00:09Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 10,
+      "playerId": "p2",
+      "type": "LIFE_LOST",
+      "data": {
+        "level": 2,
+        "cause": "collision",
+        "livesRemaining": 2
+      }
+    },
+    {
+      "eventId": "pacman-3-e11",
+      "timestamp": "2026-09-01T12:00:10Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 11,
+      "playerId": "p2",
+      "type": "LEVEL_COMPLETED",
+      "data": {
+        "level": 2
+      }
+    },
+    {
+      "eventId": "pacman-3-e12",
+      "timestamp": "2026-09-01T12:00:11Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 12,
+      "playerId": "p2",
+      "type": "LIFE_LOST",
+      "data": {
+        "level": 3,
+        "cause": "collision",
+        "livesRemaining": 1
+      }
+    },
+    {
+      "eventId": "pacman-3-e13",
+      "timestamp": "2026-09-01T12:00:12Z",
+      "gameId": "PACMAN",
+      "gameVersion": "1.0",
+      "matchId": "pacman-3",
+      "sequence": 13,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "finalScore": 3110,
+        "levelsCompleted": 2,
+        "livesRemaining": 1,
+        "reason": "SIMULATION_ENDED"
+      }
+    }
+  ]
+}

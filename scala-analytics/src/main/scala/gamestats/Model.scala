@@ -67,3 +67,16 @@ final case class RacingResult(gameId: String, gameVersion: String, matchId: Stri
   durationMs: Long, drivers: Vector[RacingDriverStats],
   classificationWithoutPenalties: Vector[ClassificationEntry], classification: Vector[ClassificationEntry],
   fastestLaps: Vector[FastestLap])
+
+final case class PacmanStart(playerId: String, initialLives: Int, initialLevel: Int)
+final case class PacmanFinish(finalScore: BigInt, levelsCompleted: Int, livesRemaining: Int, reason: String)
+final case class Pellet(level: Int, pelletId: String)
+final case class PowerPellet(level: Int, pelletId: String, durationMs: Long)
+final case class Ghost(level: Int, ghostId: String, powerUpEventId: String)
+final case class LifeLost(level: Int, cause: String, livesRemaining: Int)
+final case class LevelCompleted(level: Int)
+final case class PowerEffect(powerUpEventId: String, ghostIds: Vector[String], ghostEventIds: Vector[String], chainEventId: Option[String])
+final case class PacmanResult(gameId: String, gameVersion: String, matchId: String, playerId: String,
+  normalPellets: Int, powerPellets: Int, ghosts: Int, totalScore: BigInt, livesLost: Int,
+  livesRemaining: Int, levelsCompleted: Int, durationMs: Long, powerEffects: Vector[PowerEffect])
+final case class PacmanPlayerStats(playerId: String, completedMatches: Int, totalScore: BigInt, bestScore: BigInt)

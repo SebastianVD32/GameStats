@@ -1,0 +1,22 @@
+{
+  "gameId": "PACMAN",
+  "gameVersion": "1.0",
+  "matchId": "pacman-1",
+  "playerId": "p1",
+  "normalPellets": 2,
+  "powerPellets": 1,
+  "ghosts": 0,
+  "totalScore": 70,
+  "livesLost": 0,
+  "livesRemaining": 3,
+  "levelsCompleted": 0,
+  "durationMs": 4000,
+  "powerEffects": [
+    {
+      "powerUpEventId": "pacman-1-e4",
+      "ghostIds": [],
+      "ghostEventIds": [],
+      "chainEventId": null
+    }
+  ]
+}
