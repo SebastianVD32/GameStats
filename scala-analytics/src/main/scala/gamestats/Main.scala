@@ -8,6 +8,9 @@ import scala.util.control.NonFatal
 
 object Main {
   def main(args: Array[String]): Unit = {
+    if (args.isEmpty || args.sameElements(Array("serve"))) {
+      AnalysisServer.start(); return
+    }
     if (args.length < 1 || args.length > 2) {
       System.err.println("Usage: gamestats.Main <match.json> [result.json]")
       sys.exit(2)
@@ -15,12 +18,7 @@ object Main {
     try {
       val analysis = for {
         batch <- JsonCodec.decodeBatch(Files.readString(Path.of(args(0)), UTF_8))
-        result <- batch.gameId match {
-          case "CHESS" => ChessAnalysis.analyze(batch).map(_.asJson)
-          case "BASKETBALL" => BasketballAnalysis.analyze(batch).map(_.asJson)
-          case "RACING" => RacingAnalysis.analyze(batch).map(_.asJson)
-          case other => Left(s"Unsupported game: $other")
-        }
+        result <- Analysis.analyze(batch)
       } yield result.spaces2
       analysis match {
         case Left(error) => System.err.println(s"Analysis failed: $error"); sys.exit(1)
