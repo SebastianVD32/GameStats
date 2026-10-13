@@ -7,13 +7,25 @@ services:
       HTTP_ADDR: ":8080"
       WORKER_COUNT: "4"
       OUTPUT_PATH: /data/ready-matches.jsonl
-      # Cuando exista el modulo Scala, sustituir la salida a archivo:
-      # ANALYZER_URL: http://scala-analysis:8081/api/v1/matches
+      ANALYZER_URL: http://scala-analysis:8081/api/v1/matches
     ports:
       - "8080:8080"
     volumes:
       - gamestats-data:/data
+    depends_on:
+      scala-analysis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  scala-analysis:
+    build: ./scala-analytics
+    image: gamestats/scala-analysis:local
+    ports:
+      - "8081:8081"
+    volumes:
+      - scala-results:/data/results
     restart: unless-stopped
 
 volumes:
+  scala-results:
   gamestats-data:
