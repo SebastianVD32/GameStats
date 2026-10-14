@@ -23,7 +23,7 @@ Todos los campos son obligatorios. `playerId` también debe estar presente, aunq
 Reglas comunes:
 
 - `eventId` es único para todo el servicio.
-- `gameId` solo admite `CHESS`, `BASKETBALL` o `RACING`.
+- `gameId` solo admite `CHESS`, `BASKETBALL`, `RACING` o `PACMAN`.
 - `gameId`, `gameVersion` y `matchId` permanecen constantes durante la partida.
 - `MATCH_STARTED` tiene `sequence: 1` y `playerId: null`.
 - Los eventos de acción identifican un participante de la partida.
@@ -139,6 +139,40 @@ Se requieren al menos dos pilotos distintos y una cantidad positiva de vueltas.
 ```
 
 Todos los pilotos deben completar `plannedLaps`, no puede quedar una parada abierta y la clasificación contiene cada piloto y posición exactamente una vez. Scala será responsable de verificar analíticamente el orden después de aplicar tiempos y penalizaciones.
+
+## Pac-Man
+
+### Inicio
+
+```json
+{
+  "playerId": "p1",
+  "initialLevel": 1,
+  "initialLives": 3
+}
+```
+
+Pac-Man es de un solo jugador. El nivel y la cantidad inicial de vidas deben ser positivos.
+
+### Acciones
+
+| `type` | Campos de `data` | Validaciones principales |
+|---|---|---|
+| `PELLET_EATEN` | `level`, `pelletId` | Nivel actual y `pelletId` único dentro del nivel; suma 10 puntos. |
+| `POWER_UP_COLLECTED` | `level`, `pelletId`, `durationMs` | Nivel actual, `pelletId` único y duración positiva; suma 50 puntos e inicia un efecto nuevo. |
+| `GHOST_EATEN` | `level`, `ghostId`, `powerUpEventId` | Referencia el poder activo del mismo jugador y partida, ocurre antes de su vencimiento y no repite fantasma. |
+| `LIFE_LOST` | `level`, `cause`, `livesRemaining` | Nivel actual, causa no vacía y reducción exacta de una vida. |
+| `LEVEL_COMPLETED` | `level` | Solo completa el nivel actual y avanza exactamente al siguiente. |
+
+Los fantasmas admitidos son `BLINKY`, `PINKY`, `INKY` y `CLYDE`. Dentro de un mismo efecto valen, en orden, 200, 400, 800 y 1600 puntos. Un poder nuevo reinicia esa secuencia. El efecto anterior termina al recoger otro poder, perder una vida o completar un nivel; además, un fantasma en el instante exacto de vencimiento ya no es válido. Al llegar a cero vidas, el único evento posterior permitido es `MATCH_FINISHED`.
+
+### Final
+
+```json
+{"score": 3050, "reason": "GAME_OVER"}
+```
+
+`score` debe coincidir con los puntos reconstruidos por Go y `reason` no puede estar vacío. El documento fuente no define un catálogo cerrado de motivos, por lo que el módulo conserva el valor enviado sin inventar opciones adicionales.
 
 ## Lote entregado a Scala
 

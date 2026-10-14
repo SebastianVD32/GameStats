@@ -1,6 +1,6 @@
 # GameStats
 
-GameStats procesa eventos de ajedrez, baloncesto y carreras. Este repositorio contiene actualmente el módulo de ingestión y control de flujo desarrollado en Go; el análisis estadístico funcional se integrará como un servicio Scala independiente.
+GameStats procesa eventos de ajedrez, baloncesto, carreras y Pac-Man. Este repositorio contiene actualmente el módulo de ingestión y control de flujo desarrollado en Go; el análisis estadístico funcional se integrará como un servicio Scala independiente.
 
 ## Módulo disponible
 
@@ -18,7 +18,7 @@ go test ./...
 go run ./cmd/gamestats
 ```
 
-La API queda disponible en `http://localhost:8080`. Para comprobar de una vez las nueve partidas de demostración:
+La API queda disponible en `http://localhost:8080`. Para comprobar de una vez las doce partidas de demostración:
 
 ```powershell
 go run ./cmd/gamestats -input ./testdata/valid/interleaved-events.jsonl -serve=false
