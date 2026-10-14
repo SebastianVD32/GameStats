@@ -177,6 +177,143 @@ func TestRacingRejectsPitExitWithoutEntry(t *testing.T) {
 	}
 }
 
+func TestPacManLifecycleAndScoring(t *testing.T) {
+	t.Parallel()
+	match := mustStart(t, testEvent(domain.GamePacMan, "pacman-1", 1, nil, domain.EventMatchStarted, domain.PacManStartData{
+		PlayerID: "pac-alice", InitialLevel: 1, InitialLives: 3,
+	}))
+	player := "pac-alice"
+	powerUp := testEvent(domain.GamePacMan, "pacman-1", 3, &player, eventPowerUpCollected, domain.PowerUpData{
+		Level: 1, PelletID: "power-1", DurationMs: 10_000,
+	})
+	powerUp.EventID = "power-event-1"
+	events := []domain.Event{
+		testEvent(domain.GamePacMan, "pacman-1", 2, &player, eventPelletEaten, domain.PelletData{Level: 1, PelletID: "pellet-1"}),
+		powerUp,
+		testEvent(domain.GamePacMan, "pacman-1", 4, &player, eventGhostEaten, domain.GhostData{Level: 1, GhostID: "BLINKY", PowerUpEventID: "power-event-1"}),
+		testEvent(domain.GamePacMan, "pacman-1", 5, &player, eventGhostEaten, domain.GhostData{Level: 1, GhostID: "PINKY", PowerUpEventID: "power-event-1"}),
+		testEvent(domain.GamePacMan, "pacman-1", 6, &player, eventGhostEaten, domain.GhostData{Level: 1, GhostID: "INKY", PowerUpEventID: "power-event-1"}),
+		testEvent(domain.GamePacMan, "pacman-1", 7, &player, eventLevelCompleted, domain.LevelCompletedData{Level: 1}),
+		testEvent(domain.GamePacMan, "pacman-1", 8, &player, eventLifeLost, domain.LifeLostData{Level: 2, Cause: "GHOST_COLLISION", LivesRemaining: 2}),
+	}
+	for _, event := range events {
+		if _, err := match.Apply(event); err != nil {
+			t.Fatalf("Apply(%s) error = %v", event.Type, err)
+		}
+	}
+
+	finish := testEvent(domain.GamePacMan, "pacman-1", 9, nil, domain.EventMatchFinished, domain.PacManFinishData{
+		Score: 1460, Reason: "SESSION_ENDED",
+	})
+	if finished, err := match.Apply(finish); err != nil || !finished {
+		t.Fatalf("Apply(finish) = (%v, %v)", finished, err)
+	}
+	if got := len(match.Batch().Events); got != 9 {
+		t.Fatalf("Batch() contiene %d eventos, se esperaban 9", got)
+	}
+}
+
+func TestPacManRejectsExpiredPowerAndDuplicatePellet(t *testing.T) {
+	t.Parallel()
+	player := "pac-bob"
+
+	t.Run("expired power", func(t *testing.T) {
+		match := mustStart(t, testEvent(domain.GamePacMan, "pacman-expired", 1, nil, domain.EventMatchStarted, domain.PacManStartData{
+			PlayerID: player, InitialLevel: 1, InitialLives: 3,
+		}))
+		powerUp := testEvent(domain.GamePacMan, "pacman-expired", 2, &player, eventPowerUpCollected, domain.PowerUpData{
+			Level: 1, PelletID: "power-1", DurationMs: 1_000,
+		})
+		powerUp.EventID = "short-power"
+		if _, err := match.Apply(powerUp); err != nil {
+			t.Fatal(err)
+		}
+		ghost := testEvent(domain.GamePacMan, "pacman-expired", 3, &player, eventGhostEaten, domain.GhostData{
+			Level: 1, GhostID: "BLINKY", PowerUpEventID: "short-power",
+		})
+		if _, err := match.Clone().Apply(ghost); err == nil || !strings.Contains(err.Error(), "intervalo activo") {
+			t.Fatalf("Apply(expired ghost) error = %v", err)
+		}
+	})
+
+	t.Run("duplicate pellet", func(t *testing.T) {
+		match := mustStart(t, testEvent(domain.GamePacMan, "pacman-duplicate", 1, nil, domain.EventMatchStarted, domain.PacManStartData{
+			PlayerID: player, InitialLevel: 1, InitialLives: 3,
+		}))
+		pellet := testEvent(domain.GamePacMan, "pacman-duplicate", 2, &player, eventPelletEaten, domain.PelletData{
+			Level: 1, PelletID: "shared-pellet",
+		})
+		if _, err := match.Apply(pellet); err != nil {
+			t.Fatal(err)
+		}
+		duplicate := testEvent(domain.GamePacMan, "pacman-duplicate", 3, &player, eventPowerUpCollected, domain.PowerUpData{
+			Level: 1, PelletID: "shared-pellet", DurationMs: 5_000,
+		})
+		if _, err := match.Clone().Apply(duplicate); err == nil || !strings.Contains(err.Error(), "ya fue consumido") {
+			t.Fatalf("Apply(duplicate pellet) error = %v", err)
+		}
+	})
+}
+
+func TestPacManNewPowerResetsGhostChain(t *testing.T) {
+	t.Parallel()
+	player := "pac-dan"
+	match := mustStart(t, testEvent(domain.GamePacMan, "pacman-reset", 1, nil, domain.EventMatchStarted, domain.PacManStartData{
+		PlayerID: player, InitialLevel: 1, InitialLives: 3,
+	}))
+	firstPower := testEvent(domain.GamePacMan, "pacman-reset", 2, &player, eventPowerUpCollected, domain.PowerUpData{
+		Level: 1, PelletID: "power-1", DurationMs: 10_000,
+	})
+	firstPower.EventID = "first-power"
+	secondPower := testEvent(domain.GamePacMan, "pacman-reset", 4, &player, eventPowerUpCollected, domain.PowerUpData{
+		Level: 1, PelletID: "power-2", DurationMs: 10_000,
+	})
+	secondPower.EventID = "second-power"
+	events := []domain.Event{
+		firstPower,
+		testEvent(domain.GamePacMan, "pacman-reset", 3, &player, eventGhostEaten, domain.GhostData{Level: 1, GhostID: "BLINKY", PowerUpEventID: "first-power"}),
+		secondPower,
+		testEvent(domain.GamePacMan, "pacman-reset", 5, &player, eventGhostEaten, domain.GhostData{Level: 1, GhostID: "BLINKY", PowerUpEventID: "second-power"}),
+	}
+	for _, event := range events {
+		if _, err := match.Apply(event); err != nil {
+			t.Fatalf("Apply(%s) error = %v", event.Type, err)
+		}
+	}
+	finish := testEvent(domain.GamePacMan, "pacman-reset", 6, nil, domain.EventMatchFinished, domain.PacManFinishData{
+		Score: 500, Reason: "SESSION_ENDED",
+	})
+	if finished, err := match.Apply(finish); err != nil || !finished {
+		t.Fatalf("Apply(finish) = (%v, %v)", finished, err)
+	}
+}
+
+func TestPacManAllowsOnlyFinishAfterLastLife(t *testing.T) {
+	t.Parallel()
+	player := "pac-carol"
+	match := mustStart(t, testEvent(domain.GamePacMan, "pacman-lives", 1, nil, domain.EventMatchStarted, domain.PacManStartData{
+		PlayerID: player, InitialLevel: 1, InitialLives: 1,
+	}))
+	lostLife := testEvent(domain.GamePacMan, "pacman-lives", 2, &player, eventLifeLost, domain.LifeLostData{
+		Level: 1, Cause: "GHOST_COLLISION", LivesRemaining: 0,
+	})
+	if _, err := match.Apply(lostLife); err != nil {
+		t.Fatal(err)
+	}
+	pellet := testEvent(domain.GamePacMan, "pacman-lives", 3, &player, eventPelletEaten, domain.PelletData{
+		Level: 1, PelletID: "too-late",
+	})
+	if _, err := match.Clone().Apply(pellet); err == nil || !strings.Contains(err.Error(), "solamente se acepta MATCH_FINISHED") {
+		t.Fatalf("Apply(after last life) error = %v", err)
+	}
+	finish := testEvent(domain.GamePacMan, "pacman-lives", 3, nil, domain.EventMatchFinished, domain.PacManFinishData{
+		Score: 0, Reason: "GAME_OVER",
+	})
+	if finished, err := match.Apply(finish); err != nil || !finished {
+		t.Fatalf("Apply(finish) = (%v, %v)", finished, err)
+	}
+}
+
 func mustStart(t *testing.T, event domain.Event) *Match {
 	t.Helper()
 	match, err := Start(event)
