@@ -80,7 +80,7 @@ Devuelve `200` mientras el proceso HTTP está activo.
 
 ## Archivos de prueba
 
-`testdata/valid/interleaved-events.jsonl` contiene 46 eventos de nueve partidas —tres por juego— con marcas de tiempo superpuestas. Incluye presión de tiempo, captura, asistencia, rebote, racha de ocho puntos, quinta falta, parada en boxes y penalización.
+`testdata/valid/interleaved-events.jsonl` contiene 67 eventos de doce partidas —tres por juego— con marcas de tiempo superpuestas. Incluye presión de tiempo, captura, asistencia, rebote, racha de ocho puntos, quinta falta, parada en boxes, penalización y flujos de Pac-Man con poderes, fantasmas, vidas y niveles.
 
 ```powershell
 go run ./cmd/gamestats -input ./testdata/valid/interleaved-events.jsonl -serve=false -output ./data/ready-matches.jsonl
@@ -92,7 +92,9 @@ Los casos inválidos están separados en `testdata/invalid/` para demostrar:
 - `eventId` duplicado;
 - referencia a un tiro inexistente;
 - acción después de la quinta falta;
-- salida de boxes sin entrada.
+- salida de boxes sin entrada;
+- referencia de poder inexistente o efecto vencido en Pac-Man;
+- `pelletId` repetido, puntuación incoherente y acción después de agotar las vidas.
 
 El cargador se detiene en el primer evento rechazado y devuelve un error distinto de cero, lo cual permite usar esos archivos como pruebas negativas.
 

@@ -16,6 +16,7 @@ const (
 	GameChess      GameID = "CHESS"
 	GameBasketball GameID = "BASKETBALL"
 	GameRacing     GameID = "RACING"
+	GamePacMan     GameID = "PACMAN"
 
 	EventMatchStarted  = "MATCH_STARTED"
 	EventMatchFinished = "MATCH_FINISHED"
@@ -165,6 +166,44 @@ type RacingFinishData struct {
 	Classification []ClassificationEntry `json:"classification"`
 }
 
+type PacManStartData struct {
+	PlayerID     string `json:"playerId"`
+	InitialLevel int    `json:"initialLevel"`
+	InitialLives int    `json:"initialLives"`
+}
+
+type PelletData struct {
+	Level    int    `json:"level"`
+	PelletID string `json:"pelletId"`
+}
+
+type PowerUpData struct {
+	Level      int    `json:"level"`
+	PelletID   string `json:"pelletId"`
+	DurationMs int64  `json:"durationMs"`
+}
+
+type GhostData struct {
+	Level          int    `json:"level"`
+	GhostID        string `json:"ghostId"`
+	PowerUpEventID string `json:"powerUpEventId"`
+}
+
+type LifeLostData struct {
+	Level          int    `json:"level"`
+	Cause          string `json:"cause"`
+	LivesRemaining int    `json:"livesRemaining"`
+}
+
+type LevelCompletedData struct {
+	Level int `json:"level"`
+}
+
+type PacManFinishData struct {
+	Score  int64  `json:"score"`
+	Reason string `json:"reason"`
+}
+
 type eventWire struct {
 	EventID     string          `json:"eventId"`
 	Timestamp   string          `json:"timestamp"`
@@ -246,7 +285,7 @@ func (e Event) ValidateEnvelope() error {
 		return errors.New("type no puede estar vacio")
 	}
 	switch e.GameID {
-	case GameChess, GameBasketball, GameRacing:
+	case GameChess, GameBasketball, GameRacing, GamePacMan:
 	default:
 		return fmt.Errorf("gameId %q no esta permitido", e.GameID)
 	}
