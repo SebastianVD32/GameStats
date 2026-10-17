@@ -1,0 +1,156 @@
+name: GameStats versioned distribution
+
+# No push or tag trigger: publication requires an explicit, separately authorized dispatch.
+on:
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Prepare only, publish images, or verify PUBLIC images and create Release (requires owner authorization)'
+        type: choice
+        options: [prepare, publish-images, verify-and-release]
+        default: prepare
+        required: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: gamestats-versioned-distribution
+  cancel-in-progress: false
+
+jobs:
+  configuration:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.config.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Test registry publication guards
+        run: python3 -m unittest discover -s scripts -p test_registry_version.py
+      - name: Validate the fixed delivery version and repository
+        id: config
+        env:
+          EXPECTED_OWNER: ${{ github.repository_owner }}
+        run: |
+          test "$GITHUB_REF" = refs/heads/main
+          python3 - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          config = json.loads(Path('distribution/release.json').read_text())
+          assert re.fullmatch(r'v\d+\.\d+\.\d+', config['version'])
+          assert config['owner'] == os.environ['EXPECTED_OWNER'].lower()
+          assert config['registry'] == 'ghcr.io' and config['platform'] == 'linux/amd64'
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              output.write('version=' + config['version'] + '\n')
+          PY
+
+  tests:
+    needs: configuration
+    uses: ./.github/workflows/ci-cd.yml
+    permissions:
+      contents: read
+
+  publish-images:
+    if: inputs.operation == 'publish-images'
+    needs: [configuration, tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      packages: write
+    env:
+      VERSION: ${{ needs.configuration.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Authenticate to GHCR with the ephemeral workflow token
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: printf '%s' "$GH_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+      - name: Refuse to overwrite an existing version
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/check_registry_version.py
+      - uses: docker/setup-buildx-action@v4
+      - name: Publish Go runtime
+        uses: docker/build-push-action@v7
+        with:
+          context: go-ingestion
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/sebastianvd32/gamestats-go:${{ env.VERSION }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.VERSION }}
+      - name: Publish Scala runtime
+        uses: docker/build-push-action@v7
+        with:
+          context: scala-analytics
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/sebastianvd32/gamestats-scala:${{ env.VERSION }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.VERSION }}
+      - name: Publish self-contained demo
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: distribution/demo/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/sebastianvd32/gamestats-demo:${{ env.VERSION }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.VERSION }}
+      - name: Record the next manual gate
+        run: |
+          echo '## Images published; public distribution NOT yet verified' >> "$GITHUB_STEP_SUMMARY"
+          echo 'The package owner must make all three GHCR packages public. Then dispatch verify-and-release on this same commit. No Release was created by this operation.' >> "$GITHUB_STEP_SUMMARY"
+      - name: Remove temporary registry login
+        if: always()
+        run: docker logout ghcr.io
+
+  verify-and-release:
+    if: inputs.operation == 'verify-and-release'
+    needs: [configuration, tests]
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    env:
+      VERSION: ${{ needs.configuration.outputs.version }}
+    steps:
+      - uses: actions/checkout@v7
+      - name: Generate the source-free ZIP
+        run: python3 scripts/package_distribution.py
+      # Intentionally no registry login. This job must succeed for an unauthenticated professor.
+      - name: Pull public registry images and verify the extracted ZIP
+        shell: pwsh
+        run: ./scripts/Verify-Distribution.ps1 -Mode Registry -ExpectedRevision '${{ github.sha }}'
+      - name: Prepare the verified image manifest
+        shell: pwsh
+        run: |
+          $manifest = Get-ChildItem .cache/distribution/gamestats-package-*/images.json | Select-Object -First 1
+          Copy-Item $manifest.FullName "dist/images-$env:VERSION.json"
+      - name: Create the authorized versioned Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          test -z "$(git ls-remote --tags origin "refs/tags/$VERSION")"
+          gh release create "$VERSION" \
+            "dist/gamestats-$VERSION.zip" \
+            "dist/gamestats-$VERSION.zip.sha256" \
+            "dist/images-$VERSION.json" \
+            --target "$GITHUB_SHA" --title "GameStats $VERSION" \
+            --notes-file distribution/RELEASE_NOTES.md
+      - name: Upload registry verification evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: distribution-registry-verification-${{ github.sha }}
+          include-hidden-files: true
+          path: .cache/distribution/gamestats-package-*/
+          if-no-files-found: warn

@@ -9,6 +9,7 @@ on:
     branches:
       - main
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
@@ -18,6 +19,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  distribution-verification:
+    name: Source-free professor package and repeatable demo
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+      - name: Package delivery files without source code
+        run: python3 scripts/package_distribution.py
+      - name: Test release version collision guards
+        run: python3 -m unittest discover -s scripts -p test_registry_version.py
+      - name: Build and verify the local delivery candidate
+        shell: pwsh
+        run: ./scripts/Verify-Distribution.ps1 -Mode Local
+      - name: Upload delivery candidate and local verification evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: distribution-candidate-${{ github.sha }}
+          include-hidden-files: true
+          path: |
+            dist/
+            .cache/distribution/gamestats-package-*/
+          if-no-files-found: warn
+
   integrated-verification:
     name: Go and Scala integration in isolated Docker environment
     runs-on: ubuntu-latest
