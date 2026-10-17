@@ -54,6 +54,14 @@ completar el análisis. `scala-dev` conserva los volúmenes de caché existentes
 
 ## Integración real Go → archivo → Scala
 
+Tras integrar Pac-Man en Go, el fixture contiene 67 eventos y 12 partidas.
+El script verifica 11 resultados y el rechazo esperado de `race-3`; termina con
+`Integration OK: Go produced 12 batches; Scala analyzed 11 matches and rejected inconsistent race-3.`
+Los resultados Pac-Man de Go se comparan con `testdata/go-pacman-*.expected.json`,
+distintos de los fixtures Scala originales. Scala admite el cierre Go con
+`score` y `reason` (`SESSION_ENDED` o `GAME_OVER`), además del formato Scala anterior.
+Las cifras de nueve partidas que siguen describen la versión anterior del fixture.
+
 Desde la raíz:
 
 ```powershell

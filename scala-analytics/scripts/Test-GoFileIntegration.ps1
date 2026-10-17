@@ -11,13 +11,13 @@ docker compose -f $goCompose build go-ingestion
 if ($LASTEXITCODE -ne 0) { throw 'Go Docker build failed' }
 docker compose -f $scalaCompose build chess-cli
 if ($LASTEXITCODE -ne 0) { throw 'Scala Docker build failed' }
-docker compose -f $goCompose run --rm --no-deps --volume "${fixtures}:/fixtures:ro" --volume "${exchange}:/exchange" go-ingestion -input /fixtures/interleaved-events.jsonl -serve=false -output /exchange/ready-matches.jsonl
+docker compose -f $goCompose run --rm --no-deps -e ANALYZER_URL= --volume "${fixtures}:/fixtures:ro" --volume "${exchange}:/exchange" go-ingestion -input /fixtures/interleaved-events.jsonl -serve=false -output /exchange/ready-matches.jsonl
 if ($LASTEXITCODE -ne 0) { throw 'Go ingestion failed' }
 
 $batches = @(Get-Content -LiteralPath (Join-Path $exchange 'ready-matches.jsonl') -Encoding UTF8 | ForEach-Object { $_ | ConvertFrom-Json })
-if ($batches.Count -ne 9) { throw 'Expected exactly nine Go batches' }
+if ($batches.Count -ne 12) { throw "Expected exactly twelve Go batches; got $($batches.Count)" }
 $utf8 = [System.Text.UTF8Encoding]::new($false)
-foreach ($id in @('chess-1', 'chess-2', 'chess-3', 'basket-1', 'basket-2', 'basket-3', 'race-1', 'race-2', 'race-3')) {
+foreach ($id in @('chess-1', 'chess-2', 'chess-3', 'basket-1', 'basket-2', 'basket-3', 'race-1', 'race-2', 'race-3', 'pacman-1', 'pacman-2', 'pacman-3')) {
     $match = @($batches | Where-Object { $_.matchId -eq $id })
     if ($match.Count -ne 1) { throw "Expected exactly one Go batch for $id" }
     [System.IO.File]::WriteAllText((Join-Path $exchange "$id.json"), ($match[0] | ConvertTo-Json -Depth 50), $utf8)
@@ -46,6 +46,9 @@ foreach ($id in @('chess-1', 'chess-2', 'chess-3', 'basket-1', 'basket-2', 'bask
     $actual = Get-Content -LiteralPath (Join-Path $exchange "$id.result.json") -Raw -Encoding UTF8 | ConvertFrom-Json
     if ($actual.matchId -ne $id) { throw "Unexpected result identity for $id" }
     $expectedPath = Join-Path $repo "scala-analytics/testdata/$id.expected.json"
+    if ($id -like 'pacman-*') {
+        $expectedPath = Join-Path $repo "scala-analytics/testdata/go-$id.expected.json"
+    }
     if (Test-Path -LiteralPath $expectedPath) {
         $expected = Get-Content -LiteralPath $expectedPath -Raw -Encoding UTF8 | ConvertFrom-Json
         if (($actual | ConvertTo-Json -Depth 50 -Compress) -cne ($expected | ConvertTo-Json -Depth 50 -Compress)) {
@@ -53,5 +56,5 @@ foreach ($id in @('chess-1', 'chess-2', 'chess-3', 'basket-1', 'basket-2', 'bask
         }
     }
 }
-Write-Host 'Integration OK: Go produced 9 batches; Scala analyzed 8 matches and rejected inconsistent race-3.'
+Write-Host 'Integration OK: Go produced 12 batches; Scala analyzed 11 matches and rejected inconsistent race-3.'
 Write-Host "Results: $exchange"

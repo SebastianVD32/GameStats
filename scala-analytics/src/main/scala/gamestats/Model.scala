@@ -70,6 +70,7 @@ final case class RacingResult(gameId: String, gameVersion: String, matchId: Stri
 
 final case class PacmanStart(playerId: String, initialLives: Int, initialLevel: Int)
 final case class PacmanFinish(finalScore: BigInt, levelsCompleted: Int, livesRemaining: Int, reason: String)
+final case class GoPacmanFinish(score: BigInt, reason: String)
 final case class Pellet(level: Int, pelletId: String)
 final case class PowerPellet(level: Int, pelletId: String, durationMs: Long)
 final case class Ghost(level: Int, ghostId: String, powerUpEventId: String)

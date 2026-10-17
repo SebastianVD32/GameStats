@@ -33,7 +33,14 @@ object PacmanAnalytics {
         Right(State(start.initialLevel, start.initialLives))) { case (acc, (e, t)) =>
           acc.flatMap(s => action(s, e, t, start.playerId))
         }
-      finish <- JsonCodec.payload[PacmanFinish](es.last)
+      finish <- if (es.last.data.hcursor.downField("score").succeeded)
+        JsonCodec.payload[GoPacmanFinish](es.last).flatMap { f =>
+          check(Set("GAME_OVER", "SESSION_ENDED")(f.reason), "Invalid Go finish reason").map { _ =>
+            PacmanFinish(f.score, s.completed, s.lives,
+              if (f.reason == "GAME_OVER") "NO_LIVES" else "SIMULATION_ENDED")
+          }
+        }
+      else JsonCodec.payload[PacmanFinish](es.last)
       _ <- check(finish.finalScore == s.score && finish.levelsCompleted == s.completed && finish.livesRemaining == s.lives &&
         ((finish.reason == "NO_LIVES" && s.lives == 0) || (finish.reason == "SIMULATION_ENDED" && s.lives > 0)), "Inconsistent final result/reason")
     } yield PacmanResult(batch.gameId, batch.gameVersion, batch.matchId, start.playerId, s.normal,

@@ -1,0 +1,123 @@
+{
+    "gameId":  "PACMAN",
+    "gameVersion":  "1.0",
+    "matchId":  "pacman-1",
+    "events":  [
+                   {
+                       "eventId":  "p1-e1",
+                       "timestamp":  "2026-09-01T12:10:01Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-1",
+                       "sequence":  1,
+                       "playerId":  null,
+                       "type":  "MATCH_STARTED",
+                       "data":  {
+                                    "playerId":  "pac-alice",
+                                    "initialLevel":  1,
+                                    "initialLives":  3
+                                }
+                   },
+                   {
+                       "eventId":  "p1-e2",
+                       "timestamp":  "2026-09-01T12:10:02Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-1",
+                       "sequence":  2,
+                       "playerId":  "pac-alice",
+                       "type":  "PELLET_EATEN",
+                       "data":  {
+                                    "level":  1,
+                                    "pelletId":  "p1-normal-1"
+                                }
+                   },
+                   {
+                       "eventId":  "p1-e3",
+                       "timestamp":  "2026-09-01T12:10:03Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-1",
+                       "sequence":  3,
+                       "playerId":  "pac-alice",
+                       "type":  "POWER_UP_COLLECTED",
+                       "data":  {
+                                    "level":  1,
+                                    "pelletId":  "p1-power-1",
+                                    "durationMs":  10000
+                                }
+                   },
+                   {
+                       "eventId":  "p1-e4",
+                       "timestamp":  "2026-09-01T12:10:04Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-1",
+                       "sequence":  4,
+                       "playerId":  "pac-alice",
+                       "type":  "GHOST_EATEN",
+                       "data":  {
+                                    "level":  1,
+                                    "ghostId":  "BLINKY",
+                                    "powerUpEventId":  "p1-e3"
+                                }
+                   },
+                   {
+                       "eventId":  "p1-e5",
+                       "timestamp":  "2026-09-01T12:10:05Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-1",
+                       "sequence":  5,
+                       "playerId":  "pac-alice",
+                       "type":  "GHOST_EATEN",
+                       "data":  {
+                                    "level":  1,
+                                    "ghostId":  "PINKY",
+                                    "powerUpEventId":  "p1-e3"
+                                }
+                   },
+                   {
+                       "eventId":  "p1-e6",
+                       "timestamp":  "2026-09-01T12:10:06Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-1",
+                       "sequence":  6,
+                       "playerId":  "pac-alice",
+                       "type":  "GHOST_EATEN",
+                       "data":  {
+                                    "level":  1,
+                                    "ghostId":  "INKY",
+                                    "powerUpEventId":  "p1-e3"
+                                }
+                   },
+                   {
+                       "eventId":  "p1-e7",
+                       "timestamp":  "2026-09-01T12:10:07Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-1",
+                       "sequence":  7,
+                       "playerId":  "pac-alice",
+                       "type":  "LEVEL_COMPLETED",
+                       "data":  {
+                                    "level":  1
+                                }
+                   },
+                   {
+                       "eventId":  "p1-e8",
+                       "timestamp":  "2026-09-01T12:10:08Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-1",
+                       "sequence":  8,
+                       "playerId":  null,
+                       "type":  "MATCH_FINISHED",
+                       "data":  {
+                                    "score":  1460,
+                                    "reason":  "SESSION_ENDED"
+                                }
+                   }
+               ]
+}

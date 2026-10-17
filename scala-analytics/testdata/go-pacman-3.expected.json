@@ -1,0 +1,32 @@
+{
+    "gameId":  "PACMAN",
+    "gameVersion":  "1.0",
+    "matchId":  "pacman-3",
+    "playerId":  "pac-carol",
+    "normalPellets":  0,
+    "powerPellets":  1,
+    "ghosts":  4,
+    "totalScore":  3050,
+    "livesLost":  1,
+    "livesRemaining":  0,
+    "levelsCompleted":  0,
+    "durationMs":  7000,
+    "powerEffects":  [
+                         {
+                             "powerUpEventId":  "p3-e2",
+                             "ghostIds":  [
+                                              "BLINKY",
+                                              "PINKY",
+                                              "INKY",
+                                              "CLYDE"
+                                          ],
+                             "ghostEventIds":  [
+                                                   "p3-e3",
+                                                   "p3-e4",
+                                                   "p3-e5",
+                                                   "p3-e6"
+                                               ],
+                             "chainEventId":  "p3-e5"
+                         }
+                     ]
+}

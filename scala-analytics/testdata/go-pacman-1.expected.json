@@ -1,0 +1,30 @@
+{
+    "gameId":  "PACMAN",
+    "gameVersion":  "1.0",
+    "matchId":  "pacman-1",
+    "playerId":  "pac-alice",
+    "normalPellets":  1,
+    "powerPellets":  1,
+    "ghosts":  3,
+    "totalScore":  1460,
+    "livesLost":  0,
+    "livesRemaining":  3,
+    "levelsCompleted":  1,
+    "durationMs":  7000,
+    "powerEffects":  [
+                         {
+                             "powerUpEventId":  "p1-e3",
+                             "ghostIds":  [
+                                              "BLINKY",
+                                              "PINKY",
+                                              "INKY"
+                                          ],
+                             "ghostEventIds":  [
+                                                   "p1-e4",
+                                                   "p1-e5",
+                                                   "p1-e6"
+                                               ],
+                             "chainEventId":  "p1-e6"
+                         }
+                     ]
+}

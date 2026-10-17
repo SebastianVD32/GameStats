@@ -30,6 +30,17 @@ class PacmanAnalyticsSuite extends munit.FunSuite {
   test("sequence determines processing order") {
     assertEquals(result(fixture(2).copy(events = fixture(2).events.reverse)), result(fixture(2)))
   }
+  test("Go Pac-Man batches match independent results and validate final score and reason") {
+    (1 to 3).foreach { n =>
+      val b = JsonCodec.decodeBatch(Files.readString(Path.of(s"testdata/go-pacman-$n.json"))).toOption.get
+      assertEquals(result(b).asJson,
+        parser.parse(Files.readString(Path.of(s"testdata/go-pacman-$n.expected.json"))).toOption.get)
+      reject(b.copy(events = b.events.updated(b.events.size - 1,
+        field(b.events.last, "score", Json.fromInt(0)))))
+      reject(b.copy(events = b.events.updated(b.events.size - 1,
+        field(b.events.last, "reason", Json.fromString(if (n == 3) "SESSION_ENDED" else "GAME_OVER")))))
+    }
+  }
   test("ghost exactly at expiration is rejected") {
     reject(modify(2, 1)(e => field(e, "durationMs", Json.fromLong(1000))))
   }

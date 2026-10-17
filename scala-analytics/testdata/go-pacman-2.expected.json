@@ -1,0 +1,26 @@
+{
+    "gameId":  "PACMAN",
+    "gameVersion":  "1.0",
+    "matchId":  "pacman-2",
+    "playerId":  "pac-bob",
+    "normalPellets":  1,
+    "powerPellets":  1,
+    "ghosts":  0,
+    "totalScore":  60,
+    "livesLost":  1,
+    "livesRemaining":  1,
+    "levelsCompleted":  0,
+    "durationMs":  4000,
+    "powerEffects":  [
+                         {
+                             "powerUpEventId":  "p2-e2",
+                             "ghostIds":  [
+
+                                          ],
+                             "ghostEventIds":  [
+
+                                               ],
+                             "chainEventId":  null
+                         }
+                     ]
+}

@@ -59,6 +59,7 @@ object JsonCodec {
   given Encoder[RacingResult] = deriveEncoder
   given Decoder[PacmanStart] = strict(deriveDecoder[PacmanStart], "playerId", "initialLives", "initialLevel")
   given Decoder[PacmanFinish] = strict(deriveDecoder[PacmanFinish], "finalScore", "levelsCompleted", "livesRemaining", "reason")
+  given Decoder[GoPacmanFinish] = strict(deriveDecoder[GoPacmanFinish], "score", "reason")
   given Decoder[Pellet] = strict(deriveDecoder[Pellet], "level", "pelletId")
   given Decoder[PowerPellet] = strict(deriveDecoder[PowerPellet], "level", "pelletId", "durationMs")
   given Decoder[Ghost] = strict(deriveDecoder[Ghost], "level", "ghostId", "powerUpEventId")

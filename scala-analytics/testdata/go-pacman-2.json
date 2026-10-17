@@ -1,0 +1,80 @@
+{
+    "gameId":  "PACMAN",
+    "gameVersion":  "1.0",
+    "matchId":  "pacman-2",
+    "events":  [
+                   {
+                       "eventId":  "p2-e1",
+                       "timestamp":  "2026-09-01T12:10:01Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-2",
+                       "sequence":  1,
+                       "playerId":  null,
+                       "type":  "MATCH_STARTED",
+                       "data":  {
+                                    "playerId":  "pac-bob",
+                                    "initialLevel":  1,
+                                    "initialLives":  2
+                                }
+                   },
+                   {
+                       "eventId":  "p2-e2",
+                       "timestamp":  "2026-09-01T12:10:02Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-2",
+                       "sequence":  2,
+                       "playerId":  "pac-bob",
+                       "type":  "POWER_UP_COLLECTED",
+                       "data":  {
+                                    "level":  1,
+                                    "pelletId":  "p2-power-1",
+                                    "durationMs":  500
+                                }
+                   },
+                   {
+                       "eventId":  "p2-e3",
+                       "timestamp":  "2026-09-01T12:10:03Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-2",
+                       "sequence":  3,
+                       "playerId":  "pac-bob",
+                       "type":  "PELLET_EATEN",
+                       "data":  {
+                                    "level":  1,
+                                    "pelletId":  "p2-normal-1"
+                                }
+                   },
+                   {
+                       "eventId":  "p2-e4",
+                       "timestamp":  "2026-09-01T12:10:04Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-2",
+                       "sequence":  4,
+                       "playerId":  "pac-bob",
+                       "type":  "LIFE_LOST",
+                       "data":  {
+                                    "level":  1,
+                                    "cause":  "GHOST_COLLISION",
+                                    "livesRemaining":  1
+                                }
+                   },
+                   {
+                       "eventId":  "p2-e5",
+                       "timestamp":  "2026-09-01T12:10:05Z",
+                       "gameId":  "PACMAN",
+                       "gameVersion":  "1.0",
+                       "matchId":  "pacman-2",
+                       "sequence":  5,
+                       "playerId":  null,
+                       "type":  "MATCH_FINISHED",
+                       "data":  {
+                                    "score":  60,
+                                    "reason":  "SESSION_ENDED"
+                                }
+                   }
+               ]
+}
