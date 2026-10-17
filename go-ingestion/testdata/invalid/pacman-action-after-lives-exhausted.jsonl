@@ -1,0 +1,3 @@
+{"eventId":"pale-e1","timestamp":"2026-09-01T14:30:01Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-no-lives","sequence":1,"playerId":null,"type":"MATCH_STARTED","data":{"playerId":"pac-test","initialLevel":1,"initialLives":1}}
+{"eventId":"pale-e2","timestamp":"2026-09-01T14:30:02Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-no-lives","sequence":2,"playerId":"pac-test","type":"LIFE_LOST","data":{"level":1,"cause":"GHOST_COLLISION","livesRemaining":0}}
+{"eventId":"pale-e3","timestamp":"2026-09-01T14:30:03Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-no-lives","sequence":3,"playerId":"pac-test","type":"PELLET_EATEN","data":{"level":1,"pelletId":"too-late"}}

@@ -1,0 +1,3 @@
+{"eventId":"pep-e1","timestamp":"2026-09-01T14:10:01Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-expired-power","sequence":1,"playerId":null,"type":"MATCH_STARTED","data":{"playerId":"pac-test","initialLevel":1,"initialLives":3}}
+{"eventId":"pep-e2","timestamp":"2026-09-01T14:10:02Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-expired-power","sequence":2,"playerId":"pac-test","type":"POWER_UP_COLLECTED","data":{"level":1,"pelletId":"short-power","durationMs":1000}}
+{"eventId":"pep-e3","timestamp":"2026-09-01T14:10:03Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-expired-power","sequence":3,"playerId":"pac-test","type":"GHOST_EATEN","data":{"level":1,"ghostId":"BLINKY","powerUpEventId":"pep-e2"}}

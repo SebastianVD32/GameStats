@@ -22,6 +22,24 @@ func TestDecodeEvent(t *testing.T) {
 	}
 }
 
+func TestDecodeEventAcceptsPacMan(t *testing.T) {
+	t.Parallel()
+	raw := `{
+		"eventId":"pacman-event-1","timestamp":"2026-09-01T12:00:00Z",
+		"gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-1",
+		"sequence":1,"playerId":null,"type":"MATCH_STARTED",
+		"data":{"playerId":"pac-alice","initialLevel":1,"initialLives":3}
+	}`
+
+	event, err := DecodeEvent([]byte(raw))
+	if err != nil {
+		t.Fatalf("DecodeEvent() error = %v", err)
+	}
+	if event.GameID != GamePacMan {
+		t.Fatalf("gameId = %q, se esperaba %q", event.GameID, GamePacMan)
+	}
+}
+
 func TestDecodeEventRejectsInvalidEnvelope(t *testing.T) {
 	t.Parallel()
 	tests := map[string]struct {

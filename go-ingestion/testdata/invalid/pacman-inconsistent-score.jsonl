@@ -1,0 +1,3 @@
+{"eventId":"pis-e1","timestamp":"2026-09-01T14:40:01Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-score","sequence":1,"playerId":null,"type":"MATCH_STARTED","data":{"playerId":"pac-test","initialLevel":1,"initialLives":3}}
+{"eventId":"pis-e2","timestamp":"2026-09-01T14:40:02Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-score","sequence":2,"playerId":"pac-test","type":"PELLET_EATEN","data":{"level":1,"pelletId":"pellet-1"}}
+{"eventId":"pis-e3","timestamp":"2026-09-01T14:40:03Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-score","sequence":3,"playerId":null,"type":"MATCH_FINISHED","data":{"score":0,"reason":"SESSION_ENDED"}}

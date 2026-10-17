@@ -1,0 +1,2 @@
+{"eventId":"pmr-e1","timestamp":"2026-09-01T14:00:01Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-missing-reference","sequence":1,"playerId":null,"type":"MATCH_STARTED","data":{"playerId":"pac-test","initialLevel":1,"initialLives":3}}
+{"eventId":"pmr-e2","timestamp":"2026-09-01T14:00:02Z","gameId":"PACMAN","gameVersion":"1.0","matchId":"pacman-missing-reference","sequence":2,"playerId":"pac-test","type":"GHOST_EATEN","data":{"level":1,"ghostId":"BLINKY","powerUpEventId":"unknown-power"}}

@@ -23,6 +23,11 @@ const (
 	eventPitEntered        = "PIT_ENTERED"
 	eventPitExited         = "PIT_EXITED"
 	eventPenaltyApplied    = "PENALTY_APPLIED"
+	eventPelletEaten       = "PELLET_EATEN"
+	eventPowerUpCollected  = "POWER_UP_COLLECTED"
+	eventGhostEaten        = "GHOST_EATEN"
+	eventLifeLost          = "LIFE_LOST"
+	eventLevelCompleted    = "LEVEL_COMPLETED"
 )
 
 type Match struct {
@@ -36,6 +41,7 @@ type Match struct {
 	chess        *chessState
 	basketball   *basketballState
 	racing       *racingState
+	pacman       *pacmanState
 }
 
 func Start(event domain.Event) (*Match, error) {
@@ -65,6 +71,8 @@ func Start(event domain.Event) (*Match, error) {
 		match.basketball, err = startBasketball(event.Data)
 	case domain.GameRacing:
 		match.racing, err = startRacing(event.Data)
+	case domain.GamePacMan:
+		match.pacman, err = startPacMan(event.Data)
 	default:
 		err = fmt.Errorf("gameId %q no esta soportado", event.GameID)
 	}
@@ -128,6 +136,8 @@ func (m *Match) validateAction(event domain.Event) error {
 		return m.basketball.apply(event)
 	case domain.GameRacing:
 		return m.racing.apply(event)
+	case domain.GamePacMan:
+		return m.pacman.apply(event)
 	default:
 		return fmt.Errorf("gameId %q no esta soportado", m.gameID)
 	}
@@ -141,6 +151,8 @@ func (m *Match) validateFinish(raw json.RawMessage) error {
 		return m.basketball.finish(raw)
 	case domain.GameRacing:
 		return m.racing.finish(raw)
+	case domain.GamePacMan:
+		return m.pacman.finish(raw)
 	default:
 		return fmt.Errorf("gameId %q no esta soportado", m.gameID)
 	}
@@ -175,6 +187,9 @@ func (m *Match) Clone() *Match {
 	}
 	if m.racing != nil {
 		clone.racing = m.racing.clone()
+	}
+	if m.pacman != nil {
+		clone.pacman = m.pacman.clone()
 	}
 	return &clone
 }
@@ -765,6 +780,212 @@ func (s *racingState) clone() *racingState {
 	}
 	clone.pitStops = copyMap(s.pitStops)
 	return &clone
+}
+
+type pacmanPowerUp struct {
+	eventID     string
+	level       int
+	startedAt   time.Time
+	expiresAt   time.Time
+	eatenGhosts map[string]bool
+}
+
+type pacmanState struct {
+	playerID       string
+	currentLevel   int
+	lives          int
+	score          int64
+	pelletsByLevel map[int]map[string]bool
+	powerUp        *pacmanPowerUp
+}
+
+func startPacMan(raw json.RawMessage) (*pacmanState, error) {
+	var data domain.PacManStartData
+	if err := domain.DecodeData(raw, &data, "playerId", "initialLevel", "initialLives"); err != nil {
+		return nil, err
+	}
+	playerID := strings.TrimSpace(data.PlayerID)
+	if playerID == "" {
+		return nil, errors.New("playerId no puede estar vacio")
+	}
+	if data.InitialLevel <= 0 || data.InitialLives <= 0 {
+		return nil, errors.New("initialLevel e initialLives deben ser positivos")
+	}
+	return &pacmanState{
+		playerID:       playerID,
+		currentLevel:   data.InitialLevel,
+		lives:          data.InitialLives,
+		pelletsByLevel: make(map[int]map[string]bool),
+	}, nil
+}
+
+func (s *pacmanState) apply(event domain.Event) error {
+	if *event.PlayerID != s.playerID {
+		return fmt.Errorf("playerId %q no participa en la partida", *event.PlayerID)
+	}
+	if s.lives == 0 {
+		return errors.New("al agotar las vidas solamente se acepta MATCH_FINISHED")
+	}
+
+	switch event.Type {
+	case eventPelletEaten:
+		var data domain.PelletData
+		if err := domain.DecodeData(event.Data, &data, "level", "pelletId"); err != nil {
+			return err
+		}
+		if err := s.validateLevel(data.Level); err != nil {
+			return err
+		}
+		if err := s.registerPellet(data.Level, data.PelletID); err != nil {
+			return err
+		}
+		s.score += 10
+		return nil
+
+	case eventPowerUpCollected:
+		var data domain.PowerUpData
+		if err := domain.DecodeData(event.Data, &data, "level", "pelletId", "durationMs"); err != nil {
+			return err
+		}
+		if err := s.validateLevel(data.Level); err != nil {
+			return err
+		}
+		maxDurationMs := int64((time.Duration(1<<63 - 1)) / time.Millisecond)
+		if data.DurationMs <= 0 || data.DurationMs > maxDurationMs {
+			return errors.New("durationMs debe ser positivo y representable como duracion")
+		}
+		if err := s.registerPellet(data.Level, data.PelletID); err != nil {
+			return err
+		}
+		s.score += 50
+		s.powerUp = &pacmanPowerUp{
+			eventID:     event.EventID,
+			level:       data.Level,
+			startedAt:   event.Timestamp,
+			expiresAt:   event.Timestamp.Add(time.Duration(data.DurationMs) * time.Millisecond),
+			eatenGhosts: make(map[string]bool, 4),
+		}
+		return nil
+
+	case eventGhostEaten:
+		var data domain.GhostData
+		if err := domain.DecodeData(event.Data, &data, "level", "ghostId", "powerUpEventId"); err != nil {
+			return err
+		}
+		if err := s.validateLevel(data.Level); err != nil {
+			return err
+		}
+		if s.powerUp == nil || strings.TrimSpace(data.PowerUpEventID) != s.powerUp.eventID {
+			return errors.New("powerUpEventId no referencia el efecto de poder activo")
+		}
+		if data.Level != s.powerUp.level || event.Timestamp.Before(s.powerUp.startedAt) || !event.Timestamp.Before(s.powerUp.expiresAt) {
+			return errors.New("el fantasma fue consumido fuera del nivel o intervalo activo del poder")
+		}
+		ghostID := strings.ToUpper(strings.TrimSpace(data.GhostID))
+		if !validGhost(ghostID) {
+			return fmt.Errorf("ghostId %q no esta permitido", data.GhostID)
+		}
+		if s.powerUp.eatenGhosts[ghostID] {
+			return fmt.Errorf("ghostId %s ya fue consumido durante este efecto", ghostID)
+		}
+		rewards := [...]int64{200, 400, 800, 1600}
+		s.score += rewards[len(s.powerUp.eatenGhosts)]
+		s.powerUp.eatenGhosts[ghostID] = true
+		return nil
+
+	case eventLifeLost:
+		var data domain.LifeLostData
+		if err := domain.DecodeData(event.Data, &data, "level", "cause", "livesRemaining"); err != nil {
+			return err
+		}
+		if err := s.validateLevel(data.Level); err != nil {
+			return err
+		}
+		if strings.TrimSpace(data.Cause) == "" {
+			return errors.New("cause no puede estar vacio")
+		}
+		expectedLives := s.lives - 1
+		if data.LivesRemaining != expectedLives {
+			return fmt.Errorf("livesRemaining debe ser %d", expectedLives)
+		}
+		s.lives = data.LivesRemaining
+		s.powerUp = nil
+		return nil
+
+	case eventLevelCompleted:
+		var data domain.LevelCompletedData
+		if err := domain.DecodeData(event.Data, &data, "level"); err != nil {
+			return err
+		}
+		if err := s.validateLevel(data.Level); err != nil {
+			return err
+		}
+		s.currentLevel++
+		s.powerUp = nil
+		return nil
+
+	default:
+		return fmt.Errorf("type %q no esta permitido para PACMAN", event.Type)
+	}
+}
+
+func (s *pacmanState) validateLevel(level int) error {
+	if level != s.currentLevel {
+		return fmt.Errorf("level debe ser %d", s.currentLevel)
+	}
+	return nil
+}
+
+func (s *pacmanState) registerPellet(level int, rawPelletID string) error {
+	pelletID := strings.TrimSpace(rawPelletID)
+	if pelletID == "" {
+		return errors.New("pelletId no puede estar vacio")
+	}
+	if s.pelletsByLevel[level] == nil {
+		s.pelletsByLevel[level] = make(map[string]bool)
+	}
+	if s.pelletsByLevel[level][pelletID] {
+		return fmt.Errorf("pelletId %q ya fue consumido en el nivel %d", pelletID, level)
+	}
+	s.pelletsByLevel[level][pelletID] = true
+	return nil
+}
+
+func (s *pacmanState) finish(raw json.RawMessage) error {
+	var data domain.PacManFinishData
+	if err := domain.DecodeData(raw, &data, "score", "reason"); err != nil {
+		return err
+	}
+	if data.Score != s.score {
+		return fmt.Errorf("score debe ser %d", s.score)
+	}
+	if strings.TrimSpace(data.Reason) == "" {
+		return errors.New("reason no puede estar vacio")
+	}
+	return nil
+}
+
+func (s *pacmanState) clone() *pacmanState {
+	clone := *s
+	clone.pelletsByLevel = make(map[int]map[string]bool, len(s.pelletsByLevel))
+	for level, pellets := range s.pelletsByLevel {
+		clone.pelletsByLevel[level] = copyMap(pellets)
+	}
+	if s.powerUp != nil {
+		powerUp := *s.powerUp
+		powerUp.eatenGhosts = copyMap(s.powerUp.eatenGhosts)
+		clone.powerUp = &powerUp
+	}
+	return &clone
+}
+
+func validGhost(ghostID string) bool {
+	switch ghostID {
+	case "BLINKY", "PINKY", "INKY", "CLYDE":
+		return true
+	default:
+		return false
+	}
 }
 
 func copyMap[K comparable, V any](source map[K]V) map[K]V {
