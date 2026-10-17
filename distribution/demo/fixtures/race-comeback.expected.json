@@ -1,0 +1,92 @@
+{
+  "gameId": "RACING",
+  "gameVersion": "1.0",
+  "matchId": "race-comeback",
+  "durationMs": 6000,
+  "drivers": [
+    {
+      "playerId": "a",
+      "completedLaps": 1,
+      "bestLapTimeMs": 100,
+      "averageLapTimeMs": 100.0,
+      "totalTimeMs": 100,
+      "pitStops": 0,
+      "stops": [],
+      "timePenaltyMs": 0,
+      "positionPenalty": 0,
+      "adjustedTimeMs": 100,
+      "positionWithoutPenalties": 1,
+      "finalPosition": 1,
+      "positionChange": 0,
+      "comeback": true
+    },
+    {
+      "playerId": "b",
+      "completedLaps": 1,
+      "bestLapTimeMs": 200,
+      "averageLapTimeMs": 200.0,
+      "totalTimeMs": 200,
+      "pitStops": 0,
+      "stops": [],
+      "timePenaltyMs": 0,
+      "positionPenalty": 1,
+      "adjustedTimeMs": 200,
+      "positionWithoutPenalties": 2,
+      "finalPosition": 3,
+      "positionChange": -1,
+      "comeback": false
+    },
+    {
+      "playerId": "c",
+      "completedLaps": 1,
+      "bestLapTimeMs": 300,
+      "averageLapTimeMs": 300.0,
+      "totalTimeMs": 300,
+      "pitStops": 0,
+      "stops": [],
+      "timePenaltyMs": 1,
+      "positionPenalty": 0,
+      "adjustedTimeMs": 301,
+      "positionWithoutPenalties": 3,
+      "finalPosition": 2,
+      "positionChange": 1,
+      "comeback": false
+    }
+  ],
+  "classificationWithoutPenalties": [
+    {
+      "playerId": "a",
+      "position": 1
+    },
+    {
+      "playerId": "b",
+      "position": 2
+    },
+    {
+      "playerId": "c",
+      "position": 3
+    }
+  ],
+  "classification": [
+    {
+      "playerId": "a",
+      "position": 1
+    },
+    {
+      "playerId": "c",
+      "position": 2
+    },
+    {
+      "playerId": "b",
+      "position": 3
+    }
+  ],
+  "fastestLaps": [
+    {
+      "playerId": "a",
+      "eventId": "comeback-e2",
+      "lapNumber": 1,
+      "lapTimeMs": 100
+    }
+  ]
+}

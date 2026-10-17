@@ -1,4 +1,6 @@
 .cache/
+dist/
+__pycache__/
 
 # Scala (keep existing generated files locally, exclude them from Git)
 scala-analytics/target/

@@ -1,0 +1,128 @@
+{
+  "gameId": "RACING",
+  "gameVersion": "1.0",
+  "matchId": "race-comeback",
+  "events": [
+    {
+      "eventId": "comeback-e1",
+      "timestamp": "2026-09-01T13:00:00Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-comeback",
+      "sequence": 1,
+      "playerId": null,
+      "type": "MATCH_STARTED",
+      "data": {
+        "driverIds": [
+          "a",
+          "b",
+          "c"
+        ],
+        "plannedLaps": 1
+      }
+    },
+    {
+      "eventId": "comeback-e2",
+      "timestamp": "2026-09-01T13:00:01Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-comeback",
+      "sequence": 2,
+      "playerId": "a",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 100,
+        "position": 3
+      }
+    },
+    {
+      "eventId": "comeback-e3",
+      "timestamp": "2026-09-01T13:00:02Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-comeback",
+      "sequence": 3,
+      "playerId": "b",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 200,
+        "position": 1
+      }
+    },
+    {
+      "eventId": "comeback-e4",
+      "timestamp": "2026-09-01T13:00:03Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-comeback",
+      "sequence": 4,
+      "playerId": "c",
+      "type": "LAP_COMPLETED",
+      "data": {
+        "lapNumber": 1,
+        "lapTimeMs": 300,
+        "position": 2
+      }
+    },
+    {
+      "eventId": "comeback-e5",
+      "timestamp": "2026-09-01T13:00:04Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-comeback",
+      "sequence": 5,
+      "playerId": "b",
+      "type": "PENALTY_APPLIED",
+      "data": {
+        "penaltyType": "POSITION",
+        "value": 1,
+        "reason": "demo",
+        "lapNumber": 1
+      }
+    },
+    {
+      "eventId": "comeback-e6",
+      "timestamp": "2026-09-01T13:00:05Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-comeback",
+      "sequence": 6,
+      "playerId": "c",
+      "type": "PENALTY_APPLIED",
+      "data": {
+        "penaltyType": "TIME",
+        "value": 1,
+        "reason": "demo",
+        "lapNumber": 1
+      }
+    },
+    {
+      "eventId": "comeback-e7",
+      "timestamp": "2026-09-01T13:00:06Z",
+      "gameId": "RACING",
+      "gameVersion": "1.0",
+      "matchId": "race-comeback",
+      "sequence": 7,
+      "playerId": null,
+      "type": "MATCH_FINISHED",
+      "data": {
+        "classification": [
+          {
+            "playerId": "a",
+            "position": 1
+          },
+          {
+            "playerId": "c",
+            "position": 2
+          },
+          {
+            "playerId": "b",
+            "position": 3
+          }
+        ]
+      }
+    }
+  ]
+}
