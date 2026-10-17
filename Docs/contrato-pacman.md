@@ -1,6 +1,6 @@
 # Contrato de eventos Pac-Man
 
-Referencia: `Definicion_de_los_eventos.docx` actualizado, proporcionado por el usuario. Este contrato amplia [el contrato Go](contrato-eventos-go.md); Go todavia no admite PACMAN.
+Referencia: `Definición de los eventos.docx` del repositorio. Go y Scala admiten PACMAN de extremo a extremo. El formato de entrada vigente se define en [el contrato Go](contrato-eventos-go.md). La verificación reproducible se describe en [el informe de integración](verificacion-integracion.md).
 
 ## Sobre comun
 
@@ -38,7 +38,15 @@ Un jugador no vacio; initialLives e initialLevel enteros positivos. Todas las ac
 
 ## Final
 
-`MATCH_FINISHED`, eltimo y con `playerId: null` en el sobre:
+`MATCH_FINISHED`, último y con `playerId: null` en el sobre. El formato de Go es:
+
+```json
+{"score":3050,"reason":"GAME_OVER"}
+```
+
+`score` coincide con los puntos calculados. `reason` es texto no vacío: el documento fuente no define un catálogo ni condiciona sus valores al número de vidas. Scala deriva vidas y niveles de las acciones. No se inventan restricciones adicionales para este formato.
+
+Por compatibilidad con los fixtures Scala anteriores, la entrada directa a Scala también admite:
 
 ```json
 {"finalScore":0,"levelsCompleted":0,"livesRemaining":3,"reason":"SIMULATION_ENDED"}
@@ -56,7 +64,7 @@ POST /api/v1/matches valida y almacena antes del 200; GET /api/v1/matches/{match
 
 Un archivo JSON por partida contiene lote y resultado, con nombre SHA-256 del matchId. Escritura temporal, fsync y renombrado atomico; monitor para concurrencia y bloqueo exclusivo por directorio. Una instancia por volumen; no se requiere base de datos. Los acumulados se derivan de los registros, evitando dos escrituras inconsistentes. Un registro corrupto impide iniciar el servicio. En Windows no se fuerza el directorio; la imagen Linux si lo hace. El healthcheck comprueba HTTP y disponibilidad del almacenamiento.
 
-## Pendientes concretos de Go
+## Integración Go implementada
 
 1. Admitir PACMAN en los identificadores de juego sin cambiar el sobre.
 2. Modelar los siete payloads exactos indicados arriba y rechazar campos desconocidos.
@@ -65,4 +73,4 @@ Un archivo JSON por partida contiene lote y resultado, con nombre SHA-256 del ma
 5. Incorporar tres partidas validas y casos invalidos de expiracion, reemplazo, interrupcion, referencias, duplicados, vidas agotadas y final incorrecto a sus pruebas de dominio/estado/ingestion.
 6. Entregar el MatchBatch completo mediante HTTPSink existente al ANALYZER_URL configurado. Conservar deduplicacion y manejo de respuestas no 2xx/reintentos.
 
-Pac-Man puede enviarse directamente a Scala. La integracion Go -> Scala de Pac-Man queda pendiente de estos cambios.
+Los seis puntos anteriores están implementados en Go. Las acciones se envían a `POST /api/v1/events` y los lotes completos llegan por HTTP a Scala. Los fixtures Go y Scala usan los mismos matchId para contenidos distintos: no deben cargarse juntos en un volumen compartido. La verificación integral utiliza solo los fixtures Go y recursos nuevos por ejecución.

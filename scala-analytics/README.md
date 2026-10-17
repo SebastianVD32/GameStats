@@ -2,6 +2,8 @@
 
 El servicio analiza CHESS, BASKETBALL, RACING y PACMAN. Sin argumentos inicia HTTP en 0.0.0.0:8081; con uno o dos argumentos conserva la CLI. POST /api/v1/matches guarda antes de responder; GET /api/v1/matches/{matchId} consulta resultados y GET /api/v1/pacman/players/{playerId} consulta acumulados. GET /healthz comprueba disponibilidad.
 
+Verificación integral actual: ejecutar `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Verify-Integration.ps1` desde la raíz. Consulta [el informe](../Docs/verificacion-integracion.md). `GET /api/v1/chess/colors` consulta victorias por color sobre partidas persistidas, incluyendo empates en el denominador. Los apartados históricos siguientes conservan evidencia de etapas anteriores; sus cifras y pendientes no describen necesariamente el estado actual.
+
 Consulta [contrato y pendientes Go](../Docs/contrato-pacman.md) y [comandos PowerShell, resultados esperados y verificaciones](../Docs/verificacion-pacman-docker.md). Docker Compose en la raiz conecta Go y Scala y persiste resultados en scala-results. La configuracion scala-dev de este modulo conserva el entorno sin instalaciones en Windows.
 
 ## Scala y Docker: ajedrez, baloncesto y carreras
@@ -20,7 +22,7 @@ docker compose -f scala-analytics/compose.yaml run --rm scala-dev
 Get-Content scala-analytics/output/chess-1.result.json
 ```
 
-Las pruebas deben terminar con `Passed: Total 35, Failed 0, Errors 0, Passed 35`.
+Las pruebas deben terminar sin fallos ni errores; la suite actual contiene 47 pruebas.
 El segundo comando compila y ejecuta el programa sobre `testdata/chess-1.json`,
 imprime JSON y lo guarda en `output/chess-1.result.json`. `output` está excluido
 de Git. No uses la salida completa de sbt como JSON: contiene mensajes de compilación.
@@ -59,7 +61,7 @@ El script verifica 11 resultados y el rechazo esperado de `race-3`; termina con
 `Integration OK: Go produced 12 batches; Scala analyzed 11 matches and rejected inconsistent race-3.`
 Los resultados Pac-Man de Go se comparan con `testdata/go-pacman-*.expected.json`,
 distintos de los fixtures Scala originales. Scala admite el cierre Go con
-`score` y `reason` (`SESSION_ENDED` o `GAME_OVER`), además del formato Scala anterior.
+`score` y `reason` (texto no vacío, sin catálogo cerrado), además del formato Scala anterior.
 Las cifras de nueve partidas que siguen describen la versión anterior del fixture.
 
 Desde la raíz:

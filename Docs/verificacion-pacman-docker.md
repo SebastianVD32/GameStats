@@ -1,5 +1,7 @@
 # Scala Pac-Man, servicio HTTP y Docker
 
+> Documento histórico. La verificación actual de los cuatro juegos a través de Go, con aislamiento y limpieza automática, está en [verificacion-integracion.md](verificacion-integracion.md). Comando único: `powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Verify-Integration.ps1`. Los fixtures Scala directos de este documento no deben mezclarse con los Go en el mismo volumen porque comparten identificadores con contenido distinto.
+
 ## Cambios
 
 PacmanAnalytics anade analisis puro, modelos y codecs estrictos, puntuaciones sin overflow (BigInt), cadenas por efecto y acumulados por jugador. Analysis centraliza la seleccion de los cuatro analizadores. Main conserva CLI y ejecuta HTTP sin argumentos (o con `serve`). ResultStore persiste lotes y resultados atomicamente, valida registros al iniciar, serializa peticiones concurrentes y evita duplicados/conflictos.

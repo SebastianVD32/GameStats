@@ -1,5 +1,7 @@
 # Verificación analítica de ajedrez y baloncesto
 
+> Evidencia histórica. El servicio HTTP, la persistencia y la consulta de victorias por color ya están implementados; consulta [verificacion-integracion.md](verificacion-integracion.md) para el estado actual y la verificación reproducible.
+
 ## Ajedrez antes de avanzar
 
 Se contrastaron el DOCX de definición de eventos, el contrato Go, el código Scala,

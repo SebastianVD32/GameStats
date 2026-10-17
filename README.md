@@ -1,11 +1,25 @@
 # GameStats
 
-GameStats procesa eventos de ajedrez, baloncesto y carreras. Este repositorio contiene actualmente el módulo de ingestión y control de flujo desarrollado en Go; el análisis estadístico funcional se integrará como un servicio Scala independiente.
+GameStats procesa eventos de ajedrez, baloncesto, carreras y Pac-Man. Go recibe, valida y agrupa eventos; Scala calcula estadísticas mediante funciones puras y persiste resultados consultables por HTTP. Docker Compose conecta ambos módulos.
+
+## Verificación completa
+
+Con Docker Desktop en modo Linux, desde la raíz, ejecutar en Windows PowerShell:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File scripts/Verify-Integration.ps1
+```
+
+El script prueba Go con detector de carreras, construye ambos contenedores (incluidas las pruebas Scala), asigna puertos libres y verifica los cuatro juegos mediante Go → HTTP → Scala. Usa proyecto, red, imágenes y volúmenes exclusivos; al finalizar elimina únicamente esos recursos. Conserva logs y resumen en `scala-analytics/output/gamestats-verify-*/`. No requiere Go, Java ni Scala instalados en Windows. Primera ejecución: descarga imágenes y dependencias.
+
+El [informe de integración](Docs/verificacion-integracion.md) detalla resultados, contratos, límites y pendientes. El workflow ejecuta también esta verificación en Linux; su ejecución remota debe revisarse en GitHub Actions después de publicar los cambios.
+
+La [documentación de CI/CD](Docs/ci-cd.md) explica los tres jobs, el resumen automático de cada ejecución, los artefactos y el flujo de integración a `main`.
 
 ## Módulo disponible
 
 - [Servicio de ingestión Go](go-ingestion/README.md): API REST, carga desde archivos, validación, deduplicación, estado por partida y entrega al analizador.
-- [Análisis Scala y Docker](scala-analytics/README.md): ajedrez, baloncesto y carreras, pruebas y entrega Go → archivo → Scala sin instalaciones locales de Java o Scala.
+- [Análisis Scala y Docker](scala-analytics/README.md): cuatro juegos, pruebas e integración por HTTP o archivo sin instalaciones locales de Java o Scala.
 - [Contrato de eventos](Docs/contrato-eventos-go.md): estructura JSON y reglas implementadas para cada juego.
 - [Flujo de Git y commits](Docs/flujo-git.md): rama recomendada, commits parciales, publicación, merge y limpieza.
 

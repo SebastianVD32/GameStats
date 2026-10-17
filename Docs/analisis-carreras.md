@@ -1,5 +1,7 @@
 # Análisis funcional de carreras
 
+> Evidencia histórica. La verificación integral actual y los requisitos analíticos aún pendientes están en [verificacion-integracion.md](verificacion-integracion.md).
+
 Se reutilizan `MatchBatch`, `Event`, `JsonCodec`, la CLI y el contenedor existentes.
 `RacingAnalysis.analyze` es una función pura con estructuras inmutables y devuelve
 `Either[String, RacingResult]`. No se modifican Go ni el contrato de eventos.
