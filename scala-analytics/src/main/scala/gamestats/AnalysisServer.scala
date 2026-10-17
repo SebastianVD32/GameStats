@@ -84,6 +84,13 @@ final class ResultStore(directory: Path) extends AutoCloseable {
       "totalScore" -> scores.sum.asJson, "bestScore" -> scores.maxOption.asJson)
   }
   def healthy: Boolean = synchronized { lock.isValid && Files.isWritable(directory) }
+  def chessColors: Json = synchronized {
+    val results = records.flatMap { record =>
+      val batch = record.hcursor.get[MatchBatch]("batch").fold(e => throw e, identity)
+      Option.when(batch.gameId == "CHESS")(ChessAnalysis.analyze(batch).fold(e => throw new IllegalStateException(e), identity))
+    }
+    ChessAnalysis.winsByColor(results).fold(e => throw new IllegalStateException(e), _.asJson)
+  }
   def close(): Unit = { lock.release(); lockChannel.close() }
 }
 
@@ -105,6 +112,7 @@ object AnalysisServer {
         val p = x.getRequestURI.getRawPath
         (x.getRequestMethod, p) match {
           case ("GET", "/healthz") => respond(x, if (store.healthy) 200 else 503, Json.obj("status" -> Json.fromString(if (store.healthy) "ok" else "unavailable")))
+          case ("GET", "/api/v1/chess/colors") => respond(x, 200, store.chessColors)
           case ("POST", "/api/v1/matches") =>
             val bytes = x.getRequestBody.readNBytes(4 * 1024 * 1024 + 1)
             if (bytes.length > 4 * 1024 * 1024) respond(x, 413, error("Request too large"))

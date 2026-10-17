@@ -1,0 +1,35 @@
+{
+  "gameId": "CHESS",
+  "gameVersion": "1.0",
+  "matchId": "chess-2",
+  "winnerPlayerId": null,
+  "winnerColor": null,
+  "reason": "DRAW",
+  "durationMs": 9000,
+  "totalMoves": 0,
+  "totalCaptures": 0,
+  "players": [
+    {
+      "playerId": "chess-carol",
+      "color": "WHITE",
+      "moves": 0,
+      "captures": 0,
+      "totalDecisionTimeMs": 0,
+      "averageDecisionTimeMs": null,
+      "averageCaptureDecisionTimeMs": null,
+      "timePressure": false,
+      "pressureWindows": []
+    },
+    {
+      "playerId": "chess-dan",
+      "color": "BLACK",
+      "moves": 0,
+      "captures": 0,
+      "totalDecisionTimeMs": 0,
+      "averageDecisionTimeMs": null,
+      "averageCaptureDecisionTimeMs": null,
+      "timePressure": false,
+      "pressureWindows": []
+    }
+  ]
+}

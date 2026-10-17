@@ -29,6 +29,22 @@ class ChessAnalysisSuite extends munit.FunSuite {
     assertEquals(timeout.reason, "TIMEOUT")
     assertEquals(timeout.durationMs, 9000L)
   }
+  test("stored chess color aggregates survive retries and restart") {
+    val directory = Files.createTempDirectory("chess-colors")
+    val batches = Vector("chess-1", "chess-2", "chess-3").map(fixture)
+    val expected = ChessAnalysis.winsByColor(batches.map(result)).toOption.get.asJson
+    val store = new ResultStore(directory)
+    try {
+      batches.foreach { b =>
+        assert(store.save(b, result(b).asJson).isRight)
+        assert(store.save(b, result(b).asJson).isRight)
+      }
+      assertEquals(store.chessColors, expected)
+    } finally store.close()
+    val reopened = new ResultStore(directory)
+    try assertEquals(reopened.chessColors, expected)
+    finally reopened.close()
+  }
   test("pressure uses own consecutive moves and strictly less than 60 seconds") {
     val moveEvents = batch.events.filter(_.`type` == "MOVE_PLAYED")
     val own = Vector(moveEvents(0), moveEvents(2), moveEvents(4), moveEvents(4).copy(eventId = "fourth"))

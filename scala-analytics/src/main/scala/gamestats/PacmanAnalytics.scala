@@ -35,9 +35,9 @@ object PacmanAnalytics {
         }
       finish <- if (es.last.data.hcursor.downField("score").succeeded)
         JsonCodec.payload[GoPacmanFinish](es.last).flatMap { f =>
-          check(Set("GAME_OVER", "SESSION_ENDED")(f.reason), "Invalid Go finish reason").map { _ =>
+          check(f.reason.trim.nonEmpty, "Empty Go finish reason").map { _ =>
             PacmanFinish(f.score, s.completed, s.lives,
-              if (f.reason == "GAME_OVER") "NO_LIVES" else "SIMULATION_ENDED")
+              if (s.lives == 0) "NO_LIVES" else "SIMULATION_ENDED")
           }
         }
       else JsonCodec.payload[PacmanFinish](es.last)

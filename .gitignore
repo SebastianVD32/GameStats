@@ -9,6 +9,7 @@ scala-analytics/output/
 
 # Go
 go-ingestion/bin/
+go-ingestion/gamestats.exe
 go-ingestion/coverage.out
 go-ingestion/data/*.jsonl
 
