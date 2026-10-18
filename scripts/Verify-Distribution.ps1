@@ -57,10 +57,10 @@ try {
     $sourceCompose = Join-Path $package 'compose.yaml'
     $raw = @(Docker @('compose','--profile','demo','-f',$sourceCompose,'config','--format','json'))
     $config = ($raw -join "`n") | ConvertFrom-Json
-    if (@($config.services.PSObject.Properties).Count -ne 3 -or $config.services.PSObject.Properties.Name -notcontains 'demo') { throw 'All three delivery services must be present' }
+    if (@($config.services.PSObject.Properties).Count -ne 4 -or $config.services.PSObject.Properties.Name -notcontains 'demo') { throw 'All four delivery services must be present' }
     foreach ($service in $config.services.PSObject.Properties) {
         if ($service.Value.PSObject.Properties.Name -contains 'build') { throw 'Package contains a build instruction' }
-        if ($service.Value.image -notmatch '^ghcr\.io/sebastianvd32/gamestats-(go|scala|demo):v\d+\.\d+\.\d+$') { throw 'Unexpected image reference' }
+        if ($service.Value.image -notmatch '^ghcr\.io/sebastianvd32/gamestats-(go|scala|demo|panel):v\d+\.\d+\.\d+$') { throw 'Unexpected image reference' }
         if ($service.Value.PSObject.Properties.Name -contains 'volumes') {
             foreach ($volume in $service.Value.volumes) { if ($volume.type -ne 'volume') { throw 'Package contains a repository/host bind mount' } }
         }
@@ -71,7 +71,7 @@ try {
     foreach ($network in $config.networks.PSObject.Properties) { $network.Value.name = "${project}_$($network.Name)" }
     foreach ($service in $config.services.PSObject.Properties) {
         if ($service.Name -ne 'demo') {
-            $port = if ($service.Name -eq 'go-ingestion') {8080} else {8081}
+            $port = if ($service.Name -eq 'go-ingestion') {8080} elseif ($service.Name -eq 'panel') {8090} else {8081}
             $service.Value.ports = @(@{target=$port; published='0'; host_ip='127.0.0.1'; protocol='tcp'})
         }
         if ($Mode -eq 'Local') {
@@ -79,8 +79,8 @@ try {
             $service.Value.image = $tag
             $service.Value.pull_policy = 'never'
             $localImages += $tag
-            $context = switch ($service.Name) { 'go-ingestion' {Join-Path $repo 'go-ingestion'} 'scala-analysis' {Join-Path $repo 'scala-analytics'} 'demo' {$repo} }
-            $dockerfile = if ($service.Name -eq 'demo') {Join-Path $repo 'distribution/demo/Dockerfile'} else {Join-Path $context 'Dockerfile'}
+            $context = switch ($service.Name) { 'go-ingestion' {Join-Path $repo 'go-ingestion'} 'scala-analysis' {Join-Path $repo 'scala-analytics'} 'demo' {$repo} 'panel' {$repo} }
+            $dockerfile = switch ($service.Name) { 'demo' {Join-Path $repo 'distribution/demo/Dockerfile'} 'panel' {Join-Path $repo 'panel/Dockerfile'} default {Join-Path $context 'Dockerfile'} }
             Docker @('build','--platform','linux/amd64','-t',$tag,'-f',$dockerfile,$context)
         }
     }
@@ -111,11 +111,27 @@ try {
         }
         [System.IO.File]::WriteAllText((Join-Path $work 'images.json'), ($imageManifest | ConvertTo-Json -Depth 10), $utf8)
         $verified=$true
-        Pass 'All three GHCR images pulled anonymously with mandatory registry access'
+        Pass 'All four GHCR images pulled anonymously with mandatory registry access'
     } else { Pass 'LOCAL ONLY: images built under separate local names; registry publication is NOT verified' }
     $created=$true
-    Compose @('up','-d','--wait','--wait-timeout',"$StartupTimeoutSeconds",'go-ingestion','scala-analysis')
+    Compose @('up','-d','--wait','--wait-timeout',"$StartupTimeoutSeconds",'go-ingestion','scala-analysis','panel')
     Pass 'Source-free extracted package starts with healthy Go and Scala'
+    $panelPort = (@(Compose @('port','panel','8090'))[-1]).Trim().Split(':')[-1]
+    $panelUrl = "http://127.0.0.1:$panelPort"
+    $python = if (Get-Command python3 -ErrorAction SilentlyContinue) {'python3'} else {'python'}
+    & $python (Join-Path $repo 'scripts/test_panel_http.py') $panelUrl (Join-Path $work 'panel-http.json')
+    if ($LASTEXITCODE -ne 0) { throw 'Panel HTTP acceptance failed' }
+    if ($env:PLAYWRIGHT_MODULE) {
+        node (Join-Path $repo 'scripts/test_panel_browser.cjs') $panelUrl (Join-Path $work 'browser')
+        if ($LASTEXITCODE -ne 0) { throw 'Panel browser acceptance failed' }
+        Pass 'Real browser demos, filters, results, reload and error display pass'
+    }
+    Compose @('restart','panel')
+    Compose @('up','-d','--wait','panel')
+    $panelPort = (@(Compose @('port','panel','8090'))[-1]).Trim().Split(':')[-1]
+    & $python (Join-Path $repo 'scripts/test_panel_http.py') "http://127.0.0.1:$panelPort" (Join-Path $work 'panel-http.json') --verify-history
+    if ($LASTEXITCODE -ne 0) { throw 'Panel history did not survive restart' }
+    Pass 'Panel real API, unique runs, comparisons and persisted history pass'
     Demo
     Demo
     Pass 'Full demo passes twice without duplicated results or accumulated scores'

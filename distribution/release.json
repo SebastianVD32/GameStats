@@ -1,11 +1,12 @@
 {
-  "version": "v1.0.0",
+  "version": "v1.1.0",
   "registry": "ghcr.io",
   "owner": "sebastianvd32",
   "platform": "linux/amd64",
   "images": {
     "go-ingestion": "gamestats-go",
     "scala-analysis": "gamestats-scala",
-    "demo": "gamestats-demo"
+    "demo": "gamestats-demo",
+    "panel": "gamestats-panel"
   }
 }

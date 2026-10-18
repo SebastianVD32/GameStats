@@ -30,8 +30,16 @@ jobs:
         run: python3 scripts/package_distribution.py
       - name: Test release version collision guards
         run: python3 -m unittest discover -s scripts -p test_registry_version.py
+      - name: Test panel state, independent comparisons and safe restarts
+        run: python3 -m unittest discover -s panel -p test_panel.py
+      - name: Install isolated browser test tooling
+        run: |
+          npm install --prefix "$RUNNER_TEMP/panel-browser" --no-audit --no-fund playwright@1.64.1
+          "$RUNNER_TEMP/panel-browser/node_modules/.bin/playwright" install --with-deps chromium
       - name: Build and verify the local delivery candidate
         shell: pwsh
+        env:
+          PLAYWRIGHT_MODULE: ${{ runner.temp }}/panel-browser/node_modules/playwright
         run: ./scripts/Verify-Distribution.ps1 -Mode Local
       - name: Upload delivery candidate and local verification evidence
         if: always()

@@ -1,3 +1,5 @@
+> Actualizaci?n: este documento conserva la preparaci?n original de v1.0.0. Para el candidato v1.1.0 con cuatro im?genes y panel web, consultar [panel web](panel-web.md). No ejecutar instrucciones de publicaci?n de la versi?n anterior para publicar el candidato nuevo.
+
 # Distribución ejecutable de GameStats
 
 ## Estado de esta preparación

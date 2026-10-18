@@ -18,8 +18,8 @@ def package(output):
              for name in ("compose.yaml", "README.md")}
     references = re.findall(r"^\s+image:\s*(\S+)\s*$", files["compose.yaml"], re.M)
     expected = {f'{release["registry"]}/{release["owner"]}/{image}:{version}' for image in release["images"].values()}
-    if set(references) != expected or len(references) != 3 or re.search(r"^\s*build:", files["compose.yaml"], re.M):
-        raise ValueError("Delivery Compose must contain exactly the three fixed registry images and no build")
+    if set(references) != expected or len(references) != len(expected) or re.search(r"^\s*build:", files["compose.yaml"], re.M):
+        raise ValueError("Delivery Compose must contain exactly the configured fixed registry images and no build")
     if version not in files["README.md"]:
         raise ValueError("README does not describe the configured version")
     output.mkdir(parents=True, exist_ok=True)

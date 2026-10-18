@@ -4,7 +4,7 @@ GameStats procesa eventos de ajedrez, baloncesto, carreras y Pac-Man. Go recibe,
 
 ## Entrega sin código fuente
 
-La distribución versionada se prepara en `dist/gamestats-v1.0.0.zip`, con un Compose que usa únicamente imágenes y un README en español. El profesor solo necesitará Docker con Compose e internet. Las imágenes de entrega deben publicarse como públicas y pasar la descarga anónima antes de entregar el ZIP; el candidato local no acredita esa publicación.
+La distribución versionada se prepara en `dist/gamestats-v1.1.0.zip`, con un Compose que usa únicamente imágenes y un README en español. El profesor solo necesitará Docker con Compose e internet. Las imágenes de entrega deben publicarse como públicas y pasar la descarga anónima antes de entregar el ZIP; el candidato local no acredita esa publicación.
 
 Consulta [la preparación, pruebas y publicación autorizada](Docs/distribucion.md). Los archivos de desarrollo y sus comandos siguientes se mantienen separados de la entrega.
 

@@ -1,4 +1,4 @@
-# GameStats v1.0.0 — entrega para el profesor
+# GameStats v1.1.0 — entrega para el profesor
 
 Necesita Docker con Compose v2 (compatible con `up --wait`), contenedores Linux e internet. Imágenes `linux/amd64`: en ARM se necesita la emulación que ofrece Docker Desktop. No necesita descargar el repositorio ni instalar Go, Scala, Java o Python. Las imágenes deben haberse publicado como públicas en GHCR antes de distribuir este ZIP. Este paquete no contiene el código fuente.
 
@@ -6,6 +6,22 @@ Extraiga el ZIP en una carpeta y abra una terminal allí:
 
 ```console
 docker compose up -d --wait
+docker compose run --rm demo
+```
+
+Abra **http://localhost:8090** en el navegador. En el panel:
+
+1. Confirme Go y Scala disponibles (disponibilidad no equivale a prueba aprobada).
+2. Pulse **Ejecutar demostración**. Observe eventos aceptados/rechazados y las seis etapas reales. El botón se bloquea mientras haya una ejecución activa.
+3. Cuando termine aprobada, seleccione un juego y pulse **Ver resultado** en una partida. Las tablas muestran las estadísticas de Scala, unidades, patrones y evidencia disponible; `Sin datos` y `Sin intentos` representan valores nulos.
+4. Revise **Verificaciones independientes**: escenario, métrica, esperado, obtenido y resultado. Use el filtro de rechazos esperados o de fallos.
+5. Repita la demostración: cada ejecución web utiliza identificadores nuevos, sin borrar resultados. El historial se conserva en un volumen, también al actualizar el navegador. Las partidas del panel son distintas de las de la demo por terminal.
+
+El panel no envía comandos Docker ni monta su socket. Solo accede a los servicios internos mediante rutas del mismo origen. No contiene analíticas nuevas.
+
+Para mantener la demostración automática por terminal:
+
+```console
 docker compose run --rm demo
 ```
 
@@ -25,11 +41,11 @@ Abra estas direcciones en un navegador (devuelven JSON):
 - Acumulados Pac-Man: http://localhost:8081/api/v1/pacman/players/demo-pac-alice
 - Victorias por color: http://localhost:8081/api/v1/chess/colors
 
-Si los puertos están ocupados, defina `GAMESTATS_GO_PORT` y `GAMESTATS_SCALA_PORT` en un archivo `.env` en esta carpeta, por ejemplo 18080 y 18081, y cambie los puertos de estas direcciones. No son credenciales. La comunicación interna no cambia.
+Si los puertos están ocupados, defina `GAMESTATS_GO_PORT`, `GAMESTATS_SCALA_PORT` y/o `GAMESTATS_PANEL_PORT` en un archivo `.env` en esta carpeta, por ejemplo 18080 y 18081, y cambie los puertos de estas direcciones. No son credenciales. La comunicación interna no cambia.
 
 ## Repetir y detener
 
-Puede repetir `docker compose run --rm demo`: usa identificadores estables para sus partidas y comprueba los duplicados; los casos negativos tienen identificadores distintos en cada ejecución. No duplica resultados ni puntos. Reiniciar Go borra solo su estado temporal; Scala conserva resultados en el volumen de esta entrega.
+Puede repetir `docker compose run --rm demo`: usa identificadores estables para sus partidas y comprueba los duplicados; los casos negativos tienen identificadores distintos en cada ejecución. No duplica resultados ni puntos. Reiniciar Go borra solo su estado temporal; Scala conserva resultados y el panel conserva su historial en volúmenes de esta entrega. El catálogo del panel lista sus propias ejecuciones; no descubre automáticamente partidas externas. Los acumulados por color incluyen todas las partidas almacenadas en Scala.
 
 ```console
 docker compose stop
@@ -43,6 +59,6 @@ Para quitar contenedores y red conservando resultados: `docker compose down`. Pa
 docker compose --profile demo down --volumes
 ```
 
-No use comandos globales de limpieza. El proyecto se llama `gamestats-entrega-v1`; mantenga ese nombre al repetir. Para otra instalación independiente, añada el mismo `-p otro-nombre` a todos los comandos y use puertos diferentes.
+No use comandos globales de limpieza. El proyecto se llama `gamestats-entrega-v1-1`; mantenga ese nombre al repetir. Para otra instalación independiente, añada el mismo `-p otro-nombre` a todos los comandos y use puertos diferentes.
 
 Si falla la disponibilidad, ejecute `docker compose ps` y `docker compose logs --tail 100`. Un fallo al descargar indica imágenes aún no publicadas, privadas, falta de conexión o una versión inexistente. La entrega usa únicamente `image:` y nunca compila al arrancar.

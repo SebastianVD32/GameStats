@@ -105,10 +105,22 @@ jobs:
             org.opencontainers.image.source=https://github.com/${{ github.repository }}
             org.opencontainers.image.revision=${{ github.sha }}
             org.opencontainers.image.version=${{ env.VERSION }}
+      - name: Publish local teaching panel
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          file: panel/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ghcr.io/sebastianvd32/gamestats-panel:${{ env.VERSION }}
+          labels: |
+            org.opencontainers.image.source=https://github.com/${{ github.repository }}
+            org.opencontainers.image.revision=${{ github.sha }}
+            org.opencontainers.image.version=${{ env.VERSION }}
       - name: Record the next manual gate
         run: |
           echo '## Images published; public distribution NOT yet verified' >> "$GITHUB_STEP_SUMMARY"
-          echo 'The package owner must make all three GHCR packages public. Then dispatch verify-and-release on this same commit. No Release was created by this operation.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'The package owner must make all four GHCR packages public. Then dispatch verify-and-release on this same commit. No Release was created by this operation.' >> "$GITHUB_STEP_SUMMARY"
       - name: Remove temporary registry login
         if: always()
         run: docker logout ghcr.io
