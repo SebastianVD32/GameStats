@@ -340,3 +340,59 @@ func testEvent(gameID domain.GameID, matchID string, sequence int64, playerID *s
 		Data:        raw,
 	}
 }
+
+func TestChessAcceptsAIDecisionBeforeItsMove(t *testing.T) {
+	t.Parallel()
+	match := mustStart(t, testEvent(domain.GameChess, "chess-ai", 1, nil, domain.EventMatchStarted, domain.ChessStartData{
+		Participants:   []domain.ChessParticipant{{PlayerID: "human", Color: "WHITE"}, {PlayerID: "ia-prolog", Color: "BLACK"}},
+		InitialClockMs: 60_000,
+		IncrementMs:    1_000,
+	}))
+	human, ai := "human", "ia-prolog"
+	steps := []domain.Event{
+		testEvent(domain.GameChess, "chess-ai", 2, &human, eventMovePlayed, domain.ChessMoveData{
+			MoveNumber: 1, Piece: "PAWN", From: "e2", To: "e4", DecisionTimeMs: 2_000, ClockBeforeMs: 60_000, ClockAfterMs: 59_000,
+		}),
+		testEvent(domain.GameChess, "chess-ai", 3, &ai, eventAIDecision, domain.ChessAIDecisionData{
+			MoveNumber: 2, From: "e7", To: "e5", Depth: 3, NodesEvaluated: 1_200, Score: -15, ThinkTimeMs: 140,
+		}),
+		testEvent(domain.GameChess, "chess-ai", 4, &ai, eventMovePlayed, domain.ChessMoveData{
+			MoveNumber: 2, Piece: "PAWN", From: "e7", To: "e5", DecisionTimeMs: 150, ClockBeforeMs: 60_000, ClockAfterMs: 60_850,
+		}),
+	}
+	for _, step := range steps {
+		if _, err := match.Apply(step); err != nil {
+			t.Fatalf("Apply(%s) error = %v", step.Type, err)
+		}
+	}
+	info := match.Info()
+	if info.Events != 4 || info.Finished || info.Progress["moves"] != 2 || info.Progress["aiDecisions"] != 1 {
+		t.Fatalf("Info() inesperado: %#v", info)
+	}
+}
+
+func TestChessRejectsInvalidAIDecision(t *testing.T) {
+	t.Parallel()
+	start := testEvent(domain.GameChess, "chess-ai-bad", 1, nil, domain.EventMatchStarted, domain.ChessStartData{
+		Participants:   []domain.ChessParticipant{{PlayerID: "human", Color: "WHITE"}, {PlayerID: "ia-prolog", Color: "BLACK"}},
+		InitialClockMs: 60_000,
+	})
+	ai := "ia-prolog"
+	cases := map[string]domain.ChessAIDecisionData{
+		"turno incorrecto":     {MoveNumber: 1, From: "e7", To: "e5", Depth: 2},
+		"profundidad invalida": {MoveNumber: 1, From: "e7", To: "e5", Depth: 0},
+	}
+	for name, data := range cases {
+		match := mustStart(t, start)
+		if _, err := match.Apply(testEvent(domain.GameChess, "chess-ai-bad", 2, &ai, eventAIDecision, data)); err == nil {
+			t.Fatalf("%s: se esperaba un rechazo", name)
+		}
+	}
+	match := mustStart(t, start)
+	raw := testEvent(domain.GameChess, "chess-ai-bad", 2, &ai, eventAIDecision, map[string]any{
+		"moveNumber": 1, "from": "e7", "to": "e5", "depth": 2, "nodesEvaluated": 1, "score": 0, "thinkTimeMs": 1, "extra": true,
+	})
+	if _, err := match.Apply(raw); err == nil || !strings.Contains(err.Error(), "extra") {
+		t.Fatalf("se esperaba rechazo por campo desconocido, err = %v", err)
+	}
+}

@@ -53,6 +53,7 @@ Debe haber exactamente dos jugadores distintos y un jugador por color.
 |---|---|---|
 | `MOVE_PLAYED` | `moveNumber`, `piece`, `from`, `to`, `decisionTimeMs`, `clockBeforeMs`, `clockAfterMs` | Alternancia WHITE/BLACK, numeración continua, casillas `a1`–`h8` y consistencia del reloj con el incremento. |
 | `PIECE_CAPTURED` | `moveEventId`, `capturedPiece`, `capturedPlayerId` | El movimiento existe, pertenece al capturador, solo recibe una captura y el capturado es el rival. |
+| `AI_DECISION` | `moveNumber`, `from`, `to`, `depth`, `nodesEvaluated`, `score`, `thinkTimeMs` | Decisión de un oponente automatizado (GameConsole/Prolog). Se envía antes del `MOVE_PLAYED` que la ejecuta: `moveNumber` es el próximo movimiento y corresponde al color del jugador; casillas válidas, `depth ≥ 1`, nodos y tiempo no negativos. No altera relojes ni turnos. |
 
 Piezas: `KING`, `QUEEN`, `ROOK`, `BISHOP`, `KNIGHT`, `PAWN`. El rey no puede aparecer como pieza capturada.
 

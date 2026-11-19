@@ -74,6 +74,10 @@ Recibe un arreglo de 1 a 1000 eventos. Devuelve `201` si todos se aceptan o `207
 
 Consulta los eventos aceptados de una partida en memoria. Es una vista operativa de ingestión, no una consulta de estadísticas.
 
+### `GET /api/v1/summary`
+
+Vista operativa de las partidas que conoce el proceso: por juego, instancias iniciadas (`MATCH_STARTED` aceptados), activas y finalizadas, y eventos aceptados; además, la lista de partidas activas con su progreso (movimientos, capturas y decisiones de IA en ajedrez; puntaje, nivel y vidas en Pac-Man; vueltas en carreras). Son contadores del estado de validación, no estadísticas; se reinician junto con el proceso.
+
 ### `GET /healthz`
 
 Devuelve `200` mientras el proceso HTTP está activo.

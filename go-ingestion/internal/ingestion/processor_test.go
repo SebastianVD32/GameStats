@@ -127,3 +127,36 @@ func event(gameID domain.GameID, matchID, eventID string, sequence int64, player
 		PlayerID: playerID, Type: eventType, Data: raw,
 	}
 }
+
+func TestProcessorSummaryCountsInstancesAcrossWorkers(t *testing.T) {
+	t.Parallel()
+	processor, err := NewProcessor(3, &recordingSink{})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer processor.Close()
+	ctx := context.Background()
+	for index := range 5 {
+		if _, err := processor.Process(ctx, chessStart(fmt.Sprintf("sum-%d", index), fmt.Sprintf("sum-start-%d", index))); err != nil {
+			t.Fatal(err)
+		}
+	}
+	white := "white"
+	finish := event(domain.GameChess, "sum-0", "sum-finish-0", 2, nil, domain.EventMatchFinished,
+		domain.ChessFinishData{WinnerPlayerID: &white, Reason: "RESIGNATION"})
+	if _, err := processor.Process(ctx, finish); err != nil {
+		t.Fatal(err)
+	}
+	summary, err := processor.Summary(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	chess := summary.Games[0]
+	if chess.GameID != domain.GameChess || chess.StartedMatches != 5 || chess.ActiveMatches != 4 ||
+		chess.FinishedMatches != 1 || chess.AcceptedEvents != 6 {
+		t.Fatalf("resumen de ajedrez inesperado: %#v", chess)
+	}
+	if summary.Totals.StartedMatches != 5 || len(summary.ActiveMatches) != 4 {
+		t.Fatalf("totales inesperados: %#v", summary)
+	}
+}

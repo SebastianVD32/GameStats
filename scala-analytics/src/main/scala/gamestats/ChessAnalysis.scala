@@ -94,6 +94,15 @@ object ChessAnalysis {
           _ <- check(pieces(normalized(c.capturedPiece)) && normalized(c.capturedPiece) != "KING" &&
             players.exists(p => p.playerId == c.capturedPlayerId.trim && p.playerId != id), "Invalid captured piece/player")
         } yield s.copy(captures = s.captures :+ (e -> c))
+        // AI decisions do not change the position: they must precede the move they choose.
+        case "AI_DECISION" => for {
+          d <- JsonCodec.payload[ChessAiDecision](e)
+          _ <- check(d.moveNumber == s.moves.size.toLong + 1 &&
+            player.color == (if (d.moveNumber % 2 == 1) "WHITE" else "BLACK"), "Invalid AI decision order/color")
+          _ <- check(d.from.matches("[a-h][1-8]") && d.to.matches("[a-h][1-8]") && d.from != d.to,
+            "Invalid AI decision squares")
+          _ <- check(d.depth >= 1 && d.nodesEvaluated >= 0 && d.thinkTimeMs >= 0, "Invalid AI decision metrics")
+        } yield s
         case other => Left(s"Unexpected chess event: $other")
       }
     } yield next
@@ -104,6 +113,9 @@ object ChessAnalysis {
       val next = if (m.clockBeforeMs < 60000) (run :+ e.eventId).takeRight(3) else Vector.empty
       (next, if (next.size == 3) windows :+ PressureWindow(next) else windows)
     }._2
+
+  def aiDecisions(batch: MatchBatch): Vector[ChessAiDecision] =
+    batch.events.filter(_.`type` == "AI_DECISION").flatMap(e => JsonCodec.payload[ChessAiDecision](e).toOption)
 
   // Stateless aggregate: callers supply completed matches; replays of the same identity count once.
   def winsByColor(results: Vector[ChessResult]): Either[String, Vector[ColorStats]] = {

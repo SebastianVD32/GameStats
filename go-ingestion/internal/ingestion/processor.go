@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"hash/fnv"
+	"sort"
 	"sync"
 	"sync/atomic"
 
@@ -75,10 +76,41 @@ type queryResponse struct {
 	err   error
 }
 
+type summaryRequest struct {
+	response chan []matchstate.Info
+}
+
 type workerCommand struct {
 	process *processRequest
 	query   *queryRequest
+	summary *summaryRequest
 }
+
+// GameSummary cuenta las instancias de un juego segun el estado de ingestion.
+type GameSummary struct {
+	GameID          domain.GameID `json:"gameId"`
+	StartedMatches  int           `json:"startedMatches"`
+	ActiveMatches   int           `json:"activeMatches"`
+	FinishedMatches int           `json:"finishedMatches"`
+	AcceptedEvents  int           `json:"acceptedEvents"`
+}
+
+type SummaryTotals struct {
+	StartedMatches  int `json:"startedMatches"`
+	ActiveMatches   int `json:"activeMatches"`
+	FinishedMatches int `json:"finishedMatches"`
+	AcceptedEvents  int `json:"acceptedEvents"`
+}
+
+// Summary es una vista operativa de las partidas que conoce este proceso:
+// cuantas instancias se iniciaron, cuales siguen activas y su progreso.
+type Summary struct {
+	Games         []GameSummary     `json:"games"`
+	Totals        SummaryTotals     `json:"totals"`
+	ActiveMatches []matchstate.Info `json:"activeMatches"`
+}
+
+var summaryGames = []domain.GameID{domain.GameChess, domain.GamePacMan, domain.GameRacing, domain.GameBasketball}
 
 type Processor struct {
 	sink      delivery.Sink
@@ -158,6 +190,63 @@ func (p *Processor) Match(ctx context.Context, matchID string) (domain.MatchBatc
 	}
 }
 
+func (p *Processor) Summary(ctx context.Context) (Summary, error) {
+	if p.closed.Load() {
+		return Summary{}, closedError()
+	}
+	responses := make([]chan []matchstate.Info, len(p.workers))
+	for index, worker := range p.workers {
+		responses[index] = make(chan []matchstate.Info, 1)
+		select {
+		case worker <- workerCommand{summary: &summaryRequest{response: responses[index]}}:
+		case <-ctx.Done():
+			return Summary{}, ctx.Err()
+		case <-p.done:
+			return Summary{}, closedError()
+		}
+	}
+	byGame := make(map[domain.GameID]*GameSummary, len(summaryGames))
+	summary := Summary{Games: make([]GameSummary, len(summaryGames)), ActiveMatches: []matchstate.Info{}}
+	for index, gameID := range summaryGames {
+		summary.Games[index] = GameSummary{GameID: gameID}
+		byGame[gameID] = &summary.Games[index]
+	}
+	for _, response := range responses {
+		var infos []matchstate.Info
+		select {
+		case infos = <-response:
+		case <-ctx.Done():
+			return Summary{}, ctx.Err()
+		case <-p.done:
+			return Summary{}, closedError()
+		}
+		for _, info := range infos {
+			game := byGame[info.GameID]
+			if game == nil {
+				continue
+			}
+			game.StartedMatches++
+			game.AcceptedEvents += info.Events
+			if info.Finished {
+				game.FinishedMatches++
+			} else {
+				game.ActiveMatches++
+				summary.ActiveMatches = append(summary.ActiveMatches, info)
+			}
+		}
+	}
+	for _, game := range summary.Games {
+		summary.Totals.StartedMatches += game.StartedMatches
+		summary.Totals.ActiveMatches += game.ActiveMatches
+		summary.Totals.FinishedMatches += game.FinishedMatches
+		summary.Totals.AcceptedEvents += game.AcceptedEvents
+	}
+	sort.Slice(summary.ActiveMatches, func(i, j int) bool {
+		return summary.ActiveMatches[i].StartedAt.After(summary.ActiveMatches[j].StartedAt)
+	})
+	return summary, nil
+}
+
 func (p *Processor) Close() {
 	p.closeOnce.Do(func() {
 		p.closed.Store(true)
@@ -177,6 +266,14 @@ func (p *Processor) runWorker(commands <-chan workerCommand) {
 			if command.process != nil {
 				outcome, err := p.processOne(command.process.ctx, matches, command.process.event)
 				command.process.response <- processResponse{outcome: outcome, err: err}
+				continue
+			}
+			if command.summary != nil {
+				infos := make([]matchstate.Info, 0, len(matches))
+				for _, match := range matches {
+					infos = append(infos, match.Info())
+				}
+				command.summary.response <- infos
 				continue
 			}
 			if command.query != nil {

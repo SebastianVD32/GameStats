@@ -14,6 +14,7 @@ import (
 const (
 	eventMovePlayed        = "MOVE_PLAYED"
 	eventPieceCaptured     = "PIECE_CAPTURED"
+	eventAIDecision        = "AI_DECISION"
 	eventShotAttempted     = "SHOT_ATTEMPTED"
 	eventAssistRecorded    = "ASSIST_RECORDED"
 	eventReboundCollected  = "REBOUND_COLLECTED"
@@ -173,6 +174,52 @@ func (m *Match) Batch() domain.MatchBatch {
 
 func (m *Match) Finished() bool { return m.finished }
 
+// Info resume el estado operativo de una partida para consultas de seguimiento.
+// No calcula estadisticas: solo expone contadores que Go ya mantiene para validar.
+type Info struct {
+	MatchID     string           `json:"matchId"`
+	GameID      domain.GameID    `json:"gameId"`
+	GameVersion string           `json:"gameVersion"`
+	Events      int              `json:"events"`
+	Finished    bool             `json:"finished"`
+	StartedAt   time.Time        `json:"startedAt"`
+	LastEventAt time.Time        `json:"lastEventAt"`
+	Progress    map[string]int64 `json:"progress"`
+}
+
+func (m *Match) Info() Info {
+	info := Info{
+		MatchID:     m.matchID,
+		GameID:      m.gameID,
+		GameVersion: m.gameVersion,
+		Events:      len(m.events),
+		Finished:    m.finished,
+		LastEventAt: m.lastTime,
+		Progress:    map[string]int64{},
+	}
+	if len(m.events) > 0 {
+		info.StartedAt = m.events[0].Timestamp
+	}
+	switch {
+	case m.chess != nil:
+		info.Progress["moves"] = m.chess.nextMove - 1
+		info.Progress["captures"] = int64(len(m.chess.capturedMoves))
+		info.Progress["aiDecisions"] = m.chess.aiDecisions
+	case m.pacman != nil:
+		info.Progress["score"] = m.pacman.score
+		info.Progress["level"] = int64(m.pacman.currentLevel)
+		info.Progress["lives"] = int64(m.pacman.lives)
+	case m.racing != nil:
+		var laps int64
+		for _, completed := range m.racing.completedLaps {
+			laps += int64(completed)
+		}
+		info.Progress["completedLaps"] = laps
+		info.Progress["drivers"] = int64(len(m.racing.drivers))
+	}
+	return info
+}
+
 func (m *Match) Clone() *Match {
 	clone := *m
 	clone.events = make([]domain.Event, len(m.events))
@@ -217,6 +264,7 @@ type chessState struct {
 	nextMove      int64
 	moves         map[string]chessMove
 	capturedMoves map[string]bool
+	aiDecisions   int64
 }
 
 func startChess(raw json.RawMessage) (*chessState, error) {
@@ -330,6 +378,29 @@ func (s *chessState) apply(event domain.Event) error {
 			return errors.New("capturedPlayerId debe identificar al oponente")
 		}
 		s.capturedMoves[data.MoveEventID] = true
+		return nil
+	case eventAIDecision:
+		var data domain.ChessAIDecisionData
+		if err := domain.DecodeData(event.Data, &data, "moveNumber", "from", "to", "depth", "nodesEvaluated", "score", "thinkTimeMs"); err != nil {
+			return err
+		}
+		if data.MoveNumber != s.nextMove {
+			return fmt.Errorf("moveNumber de AI_DECISION debe ser %d", s.nextMove)
+		}
+		expectedColor := "WHITE"
+		if data.MoveNumber%2 == 0 {
+			expectedColor = "BLACK"
+		}
+		if s.colorByPlayer[playerID] != expectedColor {
+			return fmt.Errorf("la decision %d corresponde al jugador %s", data.MoveNumber, expectedColor)
+		}
+		if !chessSquare.MatchString(data.From) || !chessSquare.MatchString(data.To) || data.From == data.To {
+			return errors.New("from y to deben ser casillas distintas entre a1 y h8")
+		}
+		if data.Depth < 1 || data.NodesEvaluated < 0 || data.ThinkTimeMs < 0 {
+			return errors.New("depth debe ser positivo y nodesEvaluated/thinkTimeMs no pueden ser negativos")
+		}
+		s.aiDecisions++
 		return nil
 	default:
 		return fmt.Errorf("type %q no esta permitido para CHESS", event.Type)

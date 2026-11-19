@@ -21,6 +21,9 @@ object JsonCodec {
     "decisionTimeMs", "clockBeforeMs", "clockAfterMs")
   given Decoder[ChessCapture] = strict(deriveDecoder[ChessCapture], "moveEventId", "capturedPiece", "capturedPlayerId")
   given Decoder[ChessFinish] = strict(deriveDecoder[ChessFinish], "winnerPlayerId", "reason")
+  given Decoder[ChessAiDecision] = strict(deriveDecoder[ChessAiDecision], "moveNumber", "from", "to",
+    "depth", "nodesEvaluated", "score", "thinkTimeMs")
+  given Encoder[ChessAiDecision] = deriveEncoder
   given Encoder[Event] = deriveEncoder
   given Encoder[MatchBatch] = deriveEncoder
   given Encoder[PressureWindow] = deriveEncoder
