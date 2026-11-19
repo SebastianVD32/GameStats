@@ -68,6 +68,18 @@ type ChessCaptureData struct {
 	CapturedPlayerID string `json:"capturedPlayerId"`
 }
 
+// ChessAIDecisionData registra la jugada que eligio un oponente automatizado
+// (por ejemplo, el motor Prolog de GameConsole) antes del MOVE_PLAYED que la ejecuta.
+type ChessAIDecisionData struct {
+	MoveNumber     int64  `json:"moveNumber"`
+	From           string `json:"from"`
+	To             string `json:"to"`
+	Depth          int64  `json:"depth"`
+	NodesEvaluated int64  `json:"nodesEvaluated"`
+	Score          int64  `json:"score"`
+	ThinkTimeMs    int64  `json:"thinkTimeMs"`
+}
+
 type ChessFinishData struct {
 	WinnerPlayerID *string `json:"winnerPlayerId"`
 	Reason         string  `json:"reason"`

@@ -20,6 +20,7 @@ const (
 type eventProcessor interface {
 	Process(context.Context, domain.Event) (ingestion.Outcome, error)
 	Match(context.Context, string) (domain.MatchBatch, error)
+	Summary(context.Context) (ingestion.Summary, error)
 }
 
 type Handler struct {
@@ -33,6 +34,7 @@ func NewHandler(processor eventProcessor) *Handler {
 	handler.mux.HandleFunc("POST /api/v1/events", handler.createEvent)
 	handler.mux.HandleFunc("POST /api/v1/events/batch", handler.createBatch)
 	handler.mux.HandleFunc("GET /api/v1/matches/{matchId}", handler.getMatch)
+	handler.mux.HandleFunc("GET /api/v1/summary", handler.getSummary)
 	return handler
 }
 
@@ -121,6 +123,15 @@ func (h *Handler) getMatch(writer http.ResponseWriter, request *http.Request) {
 		return
 	}
 	writeJSON(writer, http.StatusOK, batch)
+}
+
+func (h *Handler) getSummary(writer http.ResponseWriter, request *http.Request) {
+	summary, err := h.processor.Summary(request.Context())
+	if err != nil {
+		writeProcessError(writer, err)
+		return
+	}
+	writeJSON(writer, http.StatusOK, summary)
 }
 
 type problem struct {

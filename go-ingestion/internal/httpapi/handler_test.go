@@ -76,3 +76,25 @@ func TestBatchReportsPartialFailure(t *testing.T) {
 		t.Fatalf("status = %d, body = %s", response.Code, response.Body.String())
 	}
 }
+
+func TestSummaryEndpoint(t *testing.T) {
+	t.Parallel()
+	processor, _ := ingestion.NewProcessor(2, delivery.DiscardSink{})
+	defer processor.Close()
+	handler := NewHandler(processor)
+	body := `{"eventId":"s-start","timestamp":"2026-09-01T12:00:00Z","gameId":"CHESS","gameVersion":"1.0","matchId":"s-1","sequence":1,"playerId":null,"type":"MATCH_STARTED","data":{"participants":[{"playerId":"white","color":"WHITE"},{"playerId":"black","color":"BLACK"}],"initialClockMs":60000,"incrementMs":0}}`
+	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest(http.MethodPost, "/api/v1/events", bytes.NewBufferString(body)))
+
+	response := httptest.NewRecorder()
+	handler.ServeHTTP(response, httptest.NewRequest(http.MethodGet, "/api/v1/summary", nil))
+	if response.Code != http.StatusOK {
+		t.Fatalf("GET status = %d", response.Code)
+	}
+	var summary ingestion.Summary
+	if err := json.NewDecoder(response.Body).Decode(&summary); err != nil {
+		t.Fatal(err)
+	}
+	if summary.Totals.ActiveMatches != 1 || summary.ActiveMatches[0].MatchID != "s-1" {
+		t.Fatalf("resumen inesperado: %#v", summary)
+	}
+}
