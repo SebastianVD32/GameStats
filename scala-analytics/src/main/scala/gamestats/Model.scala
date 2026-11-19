@@ -14,6 +14,9 @@ final case class ChessMove(moveNumber: Long, piece: String, from: String, to: St
   decisionTimeMs: Long, clockBeforeMs: Long, clockAfterMs: Long)
 final case class ChessCapture(moveEventId: String, capturedPiece: String, capturedPlayerId: String)
 final case class ChessFinish(winnerPlayerId: Option[String], reason: String)
+// Decision of an automated opponent (GameConsole's Prolog engine), emitted before its MOVE_PLAYED.
+final case class ChessAiDecision(moveNumber: Long, from: String, to: String, depth: Long,
+  nodesEvaluated: Long, score: Long, thinkTimeMs: Long)
 
 final case class PressureWindow(moveEventIds: Vector[String])
 final case class PlayerStats(playerId: String, color: String, moves: Int, captures: Int,
