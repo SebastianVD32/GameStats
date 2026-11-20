@@ -20,6 +20,7 @@ const (
 
 	EventMatchStarted  = "MATCH_STARTED"
 	EventMatchFinished = "MATCH_FINISHED"
+	EventMatchAborted  = "MATCH_ABORTED"
 )
 
 type Event struct {
@@ -176,6 +177,11 @@ type ClassificationEntry struct {
 
 type RacingFinishData struct {
 	Classification []ClassificationEntry `json:"classification"`
+}
+
+// MATCH_ABORTED closes an incomplete race without a classification or fabricated laps.
+type RacingAbortData struct {
+	Reason string `json:"reason"`
 }
 
 type PacManStartData struct {

@@ -114,6 +114,14 @@ func (m *Match) Apply(event domain.Event) (bool, error) {
 			return false, fmt.Errorf("MATCH_FINISHED invalido: %w", err)
 		}
 		m.finished = true
+	} else if event.Type == domain.EventMatchAborted {
+		if m.gameID != domain.GameRacing || event.PlayerID != nil {
+			return false, errors.New("MATCH_ABORTED solo admite RACING y playerId null")
+		}
+		if err := m.racing.abort(event.Data); err != nil {
+			return false, fmt.Errorf("MATCH_ABORTED invalido: %w", err)
+		}
+		m.finished = true
 	} else {
 		if event.PlayerID == nil {
 			return false, fmt.Errorf("%s debe identificar al jugador en playerId", event.Type)
@@ -839,6 +847,24 @@ func (s *racingState) finish(raw json.RawMessage) error {
 		seenPositions[entry.Position] = true
 	}
 	return nil
+}
+
+func (s *racingState) abort(raw json.RawMessage) error {
+	var data domain.RacingAbortData
+	if err := domain.DecodeData(raw, &data, "reason"); err != nil {
+		return err
+	}
+	switch data.Reason {
+	case "USER_QUIT", "RESTARTED", "PAGE_CLOSED":
+	default:
+		return errors.New("reason debe ser USER_QUIT, RESTARTED o PAGE_CLOSED")
+	}
+	for _, laps := range s.completedLaps {
+		if laps < s.plannedLaps {
+			return nil
+		}
+	}
+	return errors.New("todos los pilotos completaron las vueltas; corresponde MATCH_FINISHED")
 }
 
 func (s *racingState) clone() *racingState {

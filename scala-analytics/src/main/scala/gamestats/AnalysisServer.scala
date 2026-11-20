@@ -17,6 +17,7 @@ object Analysis {
   def analyze(b: MatchBatch): Either[String, Json] = b.gameId match {
     case "CHESS" => ChessAnalysis.analyze(b).map(_.asJson)
     case "BASKETBALL" => BasketballAnalysis.analyze(b).map(_.asJson)
+    case "RACING" if b.events.lastOption.exists(_.`type` == "MATCH_ABORTED") => RacingAnalysis.analyzeAborted(b).map(_.asJson)
     case "RACING" => RacingAnalysis.analyze(b).map(_.asJson)
     case "PACMAN" => PacmanAnalytics.analyze(b).map(_.asJson)
     case other => Left(s"Unsupported game: $other")
