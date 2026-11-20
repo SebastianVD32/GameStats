@@ -108,6 +108,9 @@ Se exige un marcador por equipo y cada valor debe coincidir con los tiros encest
 
 ## Carreras
 
+Extensión: [cierre por abandono con `MATCH_ABORTED`](contrato-abandono-carreras.md).
+Es un evento terminal exclusivo de RACING; el cierre normal conserva sus reglas.
+
 ### Inicio
 
 ```json

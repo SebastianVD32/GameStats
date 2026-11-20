@@ -2,6 +2,11 @@
 
 GameStats procesa eventos de ajedrez, baloncesto, carreras y Pac-Man. Go recibe, valida y agrupa eventos; Scala calcula estadísticas mediante funciones puras y persiste resultados consultables por HTTP. Docker Compose conecta ambos módulos.
 
+RACING admite cierre por abandono con `MATCH_ABORTED`, además de la finalización
+normal. Consulta el [contrato de abandono](Docs/contrato-abandono-carreras.md):
+se conserva el progreso real y se contabilizan los abandonos sin asignar ganador
+ni alterar los récords de carreras completadas. Requiere Go y Scala actualizados.
+
 ## Entrega sin código fuente
 
 La distribución versionada se prepara en `dist/gamestats-v1.1.0.zip`, con un Compose que usa únicamente imágenes y un README en español. El profesor solo necesitará Docker con Compose e internet. Las imágenes de entrega deben publicarse como públicas y pasar la descarga anónima antes de entregar el ZIP; el candidato local no acredita esa publicación.

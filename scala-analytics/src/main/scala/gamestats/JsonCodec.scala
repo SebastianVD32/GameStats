@@ -55,6 +55,9 @@ object JsonCodec {
   given Decoder[Penalty] = strict(deriveDecoder[Penalty], "penaltyType", "value", "reason", "lapNumber")
   given Decoder[ClassificationEntry] = strict(deriveDecoder[ClassificationEntry], "playerId", "position")
   given Decoder[RacingFinish] = strict(deriveDecoder[RacingFinish], "classification")
+  given Decoder[RacingAbort] = strict(deriveDecoder[RacingAbort], "reason")
+  given Encoder[AbortedDriverProgress] = deriveEncoder
+  given Encoder[RacingAbortedResult] = deriveEncoder
   given Encoder[ClassificationEntry] = deriveEncoder
   given Encoder[PitStopStats] = deriveEncoder
   given Encoder[FastestLap] = deriveEncoder

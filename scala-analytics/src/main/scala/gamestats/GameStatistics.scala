@@ -6,12 +6,13 @@ import JsonCodec.given
 
 final case class StoredMatch(batch: MatchBatch, result: Json)
 
-/** Aggregates over stored (completed) matches, in general and per game.
+/** Aggregates over stored terminal matches, separating completed and aborted races.
   * Pure functions: the same stored results always produce the same statistics.
   */
 object GameStatistics {
   val games: Vector[String] = Vector("CHESS", "PACMAN", "RACING", "BASKETBALL")
   private val chessReasons = Vector("CHECKMATE", "RESIGNATION", "DRAW", "TIMEOUT")
+  private def aborted(record: StoredMatch): Boolean = record.batch.events.lastOption.exists(_.`type` == "MATCH_ABORTED")
 
   private def average(values: Vector[Double]): Option[Double] =
     Option.when(values.nonEmpty)(values.sum / values.size)
@@ -36,9 +37,13 @@ object GameStatistics {
 
   def general(records: Vector[StoredMatch]): Json = {
     val times = durations(records)
+    val completed = records.filterNot(aborted)
     Json.obj(
-      "completedMatches" -> records.size.asJson,
-      "matchesByGame" -> Json.obj(games.map(g => g -> records.count(_.batch.gameId == g).asJson)*),
+      "completedMatches" -> completed.size.asJson,
+      "processedMatches" -> records.size.asJson,
+      "abortedMatches" -> records.count(aborted).asJson,
+      "matchesByGame" -> Json.obj(games.map(g => g -> completed.count(_.batch.gameId == g).asJson)*),
+      "processedMatchesByGame" -> Json.obj(games.map(g => g -> records.count(_.batch.gameId == g).asJson)*),
       "totalEvents" -> records.map(_.batch.events.size.toLong).sum.asJson,
       "totalPlayTimeMs" -> times.sum.asJson,
       "averageDurationMs" -> average(times.map(_.toDouble)).asJson
@@ -96,8 +101,10 @@ object GameStatistics {
   }
 
   def racing(records: Vector[StoredMatch]): Json = {
-    val drivers = records.flatMap(r => array(r.result, "drivers"))
-    val laps = records.flatMap(r => array(r.result, "fastestLaps")).flatMap { lap =>
+    val completed = records.filterNot(aborted)
+    val cancelled = records.filter(aborted)
+    val drivers = completed.flatMap(r => array(r.result, "drivers"))
+    val laps = completed.flatMap(r => array(r.result, "fastestLaps")).flatMap { lap =>
       for {
         id <- lap.hcursor.get[String]("playerId").toOption
         time <- longField(lap, "lapTimeMs")
@@ -105,8 +112,11 @@ object GameStatistics {
     }
     val best = laps.minByOption(_._2).map((id, time) => Json.obj("playerId" -> id.asJson, "lapTimeMs" -> time.asJson))
     Json.obj(
-      "completedMatches" -> records.size.asJson,
-      "averageDurationMs" -> average(durations(records).map(_.toDouble)).asJson,
+      "completedMatches" -> completed.size.asJson,
+      "abortedMatches" -> cancelled.size.asJson,
+      "abortsByReason" -> Json.obj(Vector("USER_QUIT", "RESTARTED", "PAGE_CLOSED").map(reason =>
+        reason -> cancelled.count(_.result.hcursor.get[String]("reason").contains(reason)).asJson)*),
+      "averageDurationMs" -> average(durations(completed).map(_.toDouble)).asJson,
       "bestLap" -> best.asJson,
       "totalPitStops" -> drivers.flatMap(d => longField(d, "pitStops")).sum.asJson,
       "comebacks" -> drivers.count(d => d.hcursor.get[Boolean]("comeback").contains(true)).asJson

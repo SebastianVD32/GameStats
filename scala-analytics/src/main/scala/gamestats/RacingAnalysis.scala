@@ -14,11 +14,42 @@ object RacingAnalysis {
       .flatMap(t => check(t.getOffset.getTotalSeconds == 0, s"${e.eventId}: timestamp must be UTC").map(_ => t.toInstant))
 
   def analyze(batch: MatchBatch): Either[String, RacingResult] = {
+    for {
+      validated <- validate(batch, "MATCH_FINISHED")
+      (start, state, duration) = validated
+      _ <- check(start.driverIds.forall(id => state.laps.count(_._1.playerId.contains(id)) == start.plannedLaps), "Incomplete laps")
+      _ <- check(state.stops.forall(_.exit.nonEmpty), "Unclosed pit stop")
+      finish <- JsonCodec.payload[RacingFinish](batch.events.last)
+      _ <- check(finish.classification.size == start.driverIds.size &&
+        finish.classification.map(_.playerId).toSet == start.driverIds.toSet &&
+        finish.classification.map(_.position).toSet == (1 to start.driverIds.size).toSet, "Invalid final classification")
+      result = calculate(batch, start, state, duration)
+      _ <- check(result.classification == finish.classification.sortBy(_.position),
+        s"Classification inconsistency: calculated ${result.classification.mkString(", ")}; reported ${finish.classification.sortBy(_.position).mkString(", ")}")
+    } yield result
+  }
+
+  def analyzeAborted(batch: MatchBatch): Either[String, RacingAbortedResult] = for {
+    validated <- validate(batch, "MATCH_ABORTED")
+    (start, state, duration) = validated
+    abort <- JsonCodec.payload[RacingAbort](batch.events.last)
+    _ <- check(Set("USER_QUIT", "RESTARTED", "PAGE_CLOSED")(abort.reason), "Invalid abort reason")
+    _ <- check(start.driverIds.exists(id => state.laps.count(_._1.playerId.contains(id)) < start.plannedLaps),
+      "All drivers completed the race; MATCH_FINISHED required")
+    progress = start.driverIds.map { id =>
+      val own = state.laps.filter(_._1.playerId.contains(id))
+      AbortedDriverProgress(id, own.size, own.map(x => BigInt(x._2.lapTimeMs)).sum,
+        state.stops.count(s => s.entry.playerId.contains(id) && s.exit.isEmpty))
+    }
+  } yield RacingAbortedResult(batch.gameId, batch.gameVersion, batch.matchId, "ABORTED", abort.reason,
+    duration, start.plannedLaps, progress)
+
+  private def validate(batch: MatchBatch, endType: String): Either[String, (RacingStart, State, Long)] = {
     val es = batch.events
     for {
       _ <- check(batch.gameId == "RACING" && batch.matchId.trim.nonEmpty && batch.gameVersion.trim.nonEmpty, "Invalid racing identity")
       _ <- check(es.size >= 2, "Complete match required")
-      _ <- check(es.head.`type` == "MATCH_STARTED" && es.last.`type` == "MATCH_FINISHED" &&
+      _ <- check(es.head.`type` == "MATCH_STARTED" && es.last.`type` == endType &&
         es.head.playerId.isEmpty && es.last.playerId.isEmpty, "Invalid start/finish")
       _ <- check(es.map(_.eventId).distinct.size == es.size && es.zipWithIndex.forall { (e, i) =>
         e.sequence == i.toLong + 1 && e.gameId == batch.gameId && e.gameVersion == batch.gameVersion &&
@@ -34,16 +65,7 @@ object RacingAnalysis {
       state <- es.slice(1, es.size - 1).foldLeft[Either[String, State]](Right(State())) { (acc, e) =>
         acc.flatMap(s => action(s, e, start))
       }
-      _ <- check(start.driverIds.forall(id => state.laps.count(_._1.playerId.contains(id)) == start.plannedLaps), "Incomplete laps")
-      _ <- check(state.stops.forall(_.exit.nonEmpty), "Unclosed pit stop")
-      finish <- JsonCodec.payload[RacingFinish](es.last)
-      _ <- check(finish.classification.size == start.driverIds.size &&
-        finish.classification.map(_.playerId).toSet == start.driverIds.toSet &&
-        finish.classification.map(_.position).toSet == (1 to start.driverIds.size).toSet, "Invalid final classification")
-      result = calculate(batch, start, state, Duration.between(times.head, times.last).toMillis)
-      _ <- check(result.classification == finish.classification.sortBy(_.position),
-        s"Classification inconsistency: calculated ${result.classification.mkString(", ")}; reported ${finish.classification.sortBy(_.position).mkString(", ")}")
-    } yield result
+    } yield (start, state, Duration.between(times.head, times.last).toMillis)
   }
 
   private def action(s: State, e: Event, start: RacingStart): Either[String, State] = for {

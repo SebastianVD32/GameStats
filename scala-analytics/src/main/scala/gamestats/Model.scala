@@ -59,6 +59,10 @@ final case class PitExit(stopId: String, lapNumber: Int, tireCompound: String)
 final case class Penalty(penaltyType: String, value: Long, reason: String, lapNumber: Int)
 final case class ClassificationEntry(playerId: String, position: Int)
 final case class RacingFinish(classification: Vector[ClassificationEntry])
+final case class RacingAbort(reason: String)
+final case class AbortedDriverProgress(playerId: String, completedLaps: Int, completedLapTimeMs: BigInt, openPitStops: Int)
+final case class RacingAbortedResult(gameId: String, gameVersion: String, matchId: String,
+  status: String, reason: String, durationMs: Long, plannedLaps: Int, driverProgress: Vector[AbortedDriverProgress])
 final case class PitStopStats(stopId: String, entryEventId: String, exitEventId: String,
   entryLapNumber: Int, exitLapNumber: Int, durationMs: Long)
 final case class FastestLap(playerId: String, eventId: String, lapNumber: Int, lapTimeMs: Long)
